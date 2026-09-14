@@ -47,6 +47,11 @@ final class Alert extends Component
         return 'rvt_alert';
     }
 
+    public static function acceptsContent(): bool
+    {
+        return true;
+    }
+
     public function render(RenderContext $context, string $content = ''): string
     {
         $id = $this->resolveId($context, self::BLOCK, $this->id);

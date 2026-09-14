@@ -36,6 +36,16 @@ abstract class Component
      * the already-rendered inner markup for components that take children, and is empty
      * for those that do not.
      */
+    /**
+     * Whether this component wraps content written between its tags.
+     *
+     * Decides whether each engine exposes it as a paired tag or a single one.
+     */
+    public static function acceptsContent(): bool
+    {
+        return false;
+    }
+
     abstract public function render(RenderContext $context, string $content = ''): string;
 
     /**
