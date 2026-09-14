@@ -1,0 +1,109 @@
+{% rvt_header
+    title="Rivet for PHP"
+    subtitle="Indiana University"
+    search_action="/search"
+    items=[
+        {label: 'Overview', href: '#overview', current: true},
+        {label: 'Components', href: '#components'},
+        {label: 'More', href: '#more', children: [
+            {label: 'Forms', href: '#forms'},
+            {label: 'Navigation', href: '#nav'}
+        ]}
+    ]
+%}
+
+<main id="main-content">
+{% rvt_container %}
+
+  <h1 class="rvt-ts-32 rvt-m-top-lg">Components</h1>
+
+  {% rvt_alert title="Scheduled maintenance" style="warning" %}
+    <p>This system will be unavailable on August 1st.</p>
+  {% endrvt_alert %}
+
+  <h2 class="rvt-ts-23 rvt-m-top-lg">Buttons</h2>
+  {% rvt_button_group %}
+    {{ rvt_button('Save changes') }}
+    {{ rvt_button('Cancel', fill: 'outline') }}
+    {{ rvt_button('Delete', purpose: 'danger') }}
+    {{ rvt_button('Plain', purpose: 'plain') }}
+  {% endrvt_button_group %}
+
+  <h2 class="rvt-ts-23 rvt-m-top-lg">Badges</h2>
+  {{ rvt_badge('Base') }}
+  {{ rvt_badge('Info', style: 'info') }}
+  {{ rvt_badge('Success', style: 'success') }}
+  {{ rvt_badge('Danger', style: 'danger', variant: 'secondary') }}
+
+  <h2 class="rvt-ts-23 rvt-m-top-lg" id="forms">A form</h2>
+  {% rvt_form_field label="Email address" required=true helper_text="We only use this to contact you." %}
+    {% rvt_input_group %}
+      {% rvt_text_input name="email" type="email" %}
+      {% rvt_input_group_addon text="@iu.edu" %}{% endrvt_input_group_addon %}
+    {% endrvt_input_group %}
+  {% endrvt_form_field %}
+
+  {% rvt_form_field label="Username" errors=["That username is taken."] %}
+    {% rvt_text_input name="username" value="nsrodrig" %}
+  {% endrvt_form_field %}
+
+  {% rvt_field_group legend="Preferred campus" %}
+    {% rvt_radio name="campus" value="bl" label="Bloomington" checked=true %}
+    {% rvt_radio name="campus" value="in" label="Indianapolis" %}
+  {% endrvt_field_group %}
+
+  <h2 class="rvt-ts-23 rvt-m-top-lg">Card</h2>
+  {% rvt_card raised=true %}
+    {% rvt_card_body title="Find your ideal campus life" title_href="#" eyebrow="Student life" meta="November 5" %}
+      <p>Each of our nine campuses offers a welcoming environment.</p>
+    {% endrvt_card_body %}
+  {% endrvt_card %}
+
+  <h2 class="rvt-ts-23 rvt-m-top-lg">Tabs</h2>
+  {% rvt_tabs label="Course information" %}
+    {% rvt_tab label="Description" %}<p class="rvt-m-top-md">A brief description.</p>{% endrvt_tab %}
+    {% rvt_tab label="Reviews" %}<p class="rvt-m-top-md">Customer reviews.</p>{% endrvt_tab %}
+  {% endrvt_tabs %}
+
+  <h2 class="rvt-ts-23 rvt-m-top-lg">Accordion</h2>
+  {% rvt_accordion %}
+    {% rvt_accordion_panel label="What is Rivet?" %}<p>IU's design system.</p>{% endrvt_accordion_panel %}
+    {% rvt_accordion_panel label="Who maintains it?" %}<p>University Information Technology Services.</p>{% endrvt_accordion_panel %}
+  {% endrvt_accordion %}
+
+  <h2 class="rvt-ts-23 rvt-m-top-lg">Dialog</h2>
+  {% rvt_dialog title="Delete this record?" variant="confirmation" trigger_text="Delete record" %}
+    {% rvt_dialog_body %}<p>This cannot be undone.</p>{% endrvt_dialog_body %}
+    {% rvt_dialog_controls %}
+      {{ rvt_button('Delete', purpose: 'danger') }}
+      {{ rvt_button('Cancel', fill: 'outline') }}
+    {% endrvt_dialog_controls %}
+  {% endrvt_dialog %}
+
+  <h2 class="rvt-ts-23 rvt-m-top-lg" id="nav">Table</h2>
+  {% rvt_table caption="IU services" caption_visible=true responsive=true %}
+    <thead><tr><th scope="col">Service</th><th scope="col">URL</th></tr></thead>
+    <tbody>
+      <tr><th scope="row">One.IU</th><td>one.iu.edu</td></tr>
+      <tr><th scope="row">Canvas</th><td>canvas.iu.edu</td></tr>
+    </tbody>
+  {% endrvt_table %}
+
+  <h2 class="rvt-ts-23 rvt-m-top-lg">Pagination</h2>
+  {{ rvt_pagination(
+      items: [{label: '1', href: '#'}, {label: '2', href: '#', current: true}, {label: '3', href: '#'}],
+      previous_href: '#',
+      next_href: '#'
+  ) }}
+
+  <h2 class="rvt-ts-23 rvt-m-top-lg">Steps</h2>
+  {{ rvt_step_indicator(steps: [
+      {label: 'Create username', href: '#'},
+      {label: 'Personal information', href: '#', current: true},
+      {label: 'Confirm', href: '#'}
+  ]) }}
+
+{% endrvt_container %}
+</main>
+
+{{ rvt_footer() }}

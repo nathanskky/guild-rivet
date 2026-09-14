@@ -44,13 +44,15 @@
             "@test",
             "@analyse",
             "@format:check"
-        ]
+        ],
+        "components": "php bin/components.php"
     },
     "scripts-descriptions": {
         "test": "Run the guild-rivet test suite (fails if no tests run).",
         "analyse": "Run PHPStan at level max over src/.",
         "format": "Auto-fix code style with Pint (PSR-12).",
         "format:check": "Check code style with Pint (PSR-12) without modifying files.",
-        "check": "Run tests, static analysis, then style check. Stops at the first failure."
+        "check": "Run tests, static analysis, then style check. Stops at the first failure.",
+        "components": "List every registered component with its parameters."
     }
 }

@@ -1,0 +1,109 @@
+{rvtHeader
+    title: 'Rivet for PHP',
+    subtitle: 'Indiana University',
+    searchAction: '/search',
+    items: [
+        ['label' => 'Overview', 'href' => '#overview', 'current' => true],
+        ['label' => 'Components', 'href' => '#components'],
+        ['label' => 'More', 'href' => '#more', 'children' => [
+            ['label' => 'Forms', 'href' => '#forms'],
+            ['label' => 'Navigation', 'href' => '#nav'],
+        ]],
+    ]
+}
+
+<main id="main-content">
+{rvtContainer}
+
+  <h1 class="rvt-ts-32 rvt-m-top-lg">Components</h1>
+
+  {rvtAlert title: 'Scheduled maintenance', style: 'warning'}
+    <p>This system will be unavailable on August 1st.</p>
+  {/rvtAlert}
+
+  <h2 class="rvt-ts-23 rvt-m-top-lg">Buttons</h2>
+  {rvtButtonGroup}
+    {rvtButton 'Save changes' /}
+    {rvtButton 'Cancel', fill: 'outline' /}
+    {rvtButton 'Delete', purpose: 'danger' /}
+    {rvtButton 'Plain', purpose: 'plain' /}
+  {/rvtButtonGroup}
+
+  <h2 class="rvt-ts-23 rvt-m-top-lg">Badges</h2>
+  {rvtBadge 'Base'}
+  {rvtBadge 'Info', style: 'info'}
+  {rvtBadge 'Success', style: 'success'}
+  {rvtBadge 'Danger', style: 'danger', variant: 'secondary'}
+
+  <h2 class="rvt-ts-23 rvt-m-top-lg" id="forms">A form</h2>
+  {rvtFormField label: 'Email address', required: true, helperText: 'We only use this to contact you.'}
+    {rvtInputGroup}
+      {rvtTextInput name: 'email', type: 'email'}
+      {rvtInputGroupAddon text: '@iu.edu' /}
+    {/rvtInputGroup}
+  {/rvtFormField}
+
+  {rvtFormField label: 'Username', errors: ['That username is taken.']}
+    {rvtTextInput name: 'username', value: 'nsrodrig'}
+  {/rvtFormField}
+
+  {rvtFieldGroup legend: 'Preferred campus'}
+    {rvtRadio name: 'campus', value: 'bl', label: 'Bloomington', checked: true}
+    {rvtRadio name: 'campus', value: 'in', label: 'Indianapolis'}
+  {/rvtFieldGroup}
+
+  <h2 class="rvt-ts-23 rvt-m-top-lg">Card</h2>
+  {rvtCard raised: true}
+    {rvtCardBody title: 'Find your ideal campus life', titleHref: '#', eyebrow: 'Student life', meta: 'November 5'}
+      <p>Each of our nine campuses offers a welcoming environment.</p>
+    {/rvtCardBody}
+  {/rvtCard}
+
+  <h2 class="rvt-ts-23 rvt-m-top-lg">Tabs</h2>
+  {rvtTabs label: 'Course information'}
+    {rvtTab label: 'Description'}<p class="rvt-m-top-md">A brief description.</p>{/rvtTab}
+    {rvtTab label: 'Reviews'}<p class="rvt-m-top-md">Customer reviews.</p>{/rvtTab}
+  {/rvtTabs}
+
+  <h2 class="rvt-ts-23 rvt-m-top-lg">Accordion</h2>
+  {rvtAccordion}
+    {rvtAccordionPanel label: 'What is Rivet?'}<p>IU's design system.</p>{/rvtAccordionPanel}
+    {rvtAccordionPanel label: 'Who maintains it?'}<p>University Information Technology Services.</p>{/rvtAccordionPanel}
+  {/rvtAccordion}
+
+  <h2 class="rvt-ts-23 rvt-m-top-lg">Dialog</h2>
+  {rvtDialog title: 'Delete this record?', variant: 'confirmation', triggerText: 'Delete record'}
+    {rvtDialogBody}<p>This cannot be undone.</p>{/rvtDialogBody}
+    {rvtDialogControls}
+      {rvtButton 'Delete', purpose: 'danger' /}
+      {rvtButton 'Cancel', fill: 'outline' /}
+    {/rvtDialogControls}
+  {/rvtDialog}
+
+  <h2 class="rvt-ts-23 rvt-m-top-lg" id="nav">Table</h2>
+  {rvtTable caption: 'IU services', captionVisible: true, responsive: true}
+    <thead><tr><th scope="col">Service</th><th scope="col">URL</th></tr></thead>
+    <tbody>
+      <tr><th scope="row">One.IU</th><td>one.iu.edu</td></tr>
+      <tr><th scope="row">Canvas</th><td>canvas.iu.edu</td></tr>
+    </tbody>
+  {/rvtTable}
+
+  <h2 class="rvt-ts-23 rvt-m-top-lg">Pagination</h2>
+  {rvtPagination
+      items: [['label' => '1', 'href' => '#'], ['label' => '2', 'href' => '#', 'current' => true], ['label' => '3', 'href' => '#']],
+      previousHref: '#',
+      nextHref: '#'
+  }
+
+  <h2 class="rvt-ts-23 rvt-m-top-lg">Steps</h2>
+  {rvtStepIndicator steps: [
+      ['label' => 'Create username', 'href' => '#'],
+      ['label' => 'Personal information', 'href' => '#', 'current' => true],
+      ['label' => 'Confirm', 'href' => '#'],
+  ]}
+
+{/rvtContainer}
+</main>
+
+{rvtFooter}
