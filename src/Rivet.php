@@ -40,6 +40,11 @@ use Guild\Rivet\Component\Icon;
 use Guild\Rivet\Component\InlineAlert;
 use Guild\Rivet\Component\ListComponent;
 use Guild\Rivet\Component\LoadingIndicator;
+use Guild\Rivet\Component\Page\Page;
+use Guild\Rivet\Component\Page\PageBreadcrumbs;
+use Guild\Rivet\Component\Page\PageScripts;
+use Guild\Rivet\Component\Page\PageSidebar;
+use Guild\Rivet\Component\Page\PageStyles;
 use Guild\Rivet\Component\Pagination;
 use Guild\Rivet\Component\SegmentedButtons;
 use Guild\Rivet\Component\Sidenav;
@@ -101,6 +106,11 @@ final class Rivet
             InputGroupAddon::class,
             ListComponent::class,
             LoadingIndicator::class,
+            Page::class,
+            PageBreadcrumbs::class,
+            PageScripts::class,
+            PageSidebar::class,
+            PageStyles::class,
             Pagination::class,
             Radio::class,
             Row::class,
