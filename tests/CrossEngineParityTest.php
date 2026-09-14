@@ -4,11 +4,9 @@ declare(strict_types=1);
 
 namespace Guild\Rivet\Test;
 
-use Guild\Rivet\Component\Alert;
-use Guild\Rivet\Component\Badge;
-use Guild\Rivet\Component\Button;
 use Guild\Rivet\Latte\RivetExtension as LatteExtension;
 use Guild\Rivet\Render\ComponentRegistry;
+use Guild\Rivet\Rivet;
 use Guild\Rivet\Render\Renderer;
 use Guild\Rivet\Twig\RivetExtension as TwigExtension;
 use Guild\Rivet\Twig\RivetRuntime;
@@ -98,9 +96,33 @@ final class CrossEngineParityTest extends TestCase
         ];
     }
 
+    /**
+     * Every component must be reachable from both engines, so a new one cannot be added
+     * to the registry while being wired into only one of them.
+     */
+    public function testEveryRegisteredComponentIsExposedByBothEngines(): void
+    {
+        $names = Rivet::registry()->names();
+        $latte = array_map(LatteExtension::tagName(...), $names);
+
+        $twigTags = array_map(
+            static fn (object $parser): string => $parser->getTag(),
+            new TwigExtension(Rivet::registry())->getTokenParsers(),
+        );
+        $latteTags = array_keys(new LatteExtension(Rivet::registry(), new Renderer(Rivet::registry()))->getTags());
+
+        sort($names);
+        sort($twigTags);
+        sort($latte);
+        sort($latteTags);
+
+        self::assertSame($names, $twigTags, 'Twig must expose a tag for every registered component.');
+        self::assertSame($latte, $latteTags, 'Latte must expose a tag for every registered component.');
+    }
+
     private static function registry(): ComponentRegistry
     {
-        return new ComponentRegistry([Badge::class, Button::class, Alert::class]);
+        return Rivet::registry();
     }
 
     private function renderTwig(string $template): string
