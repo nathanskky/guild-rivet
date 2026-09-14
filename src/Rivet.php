@@ -10,9 +10,16 @@ use Guild\Rivet\Component\Badge;
 use Guild\Rivet\Component\Breadcrumbs;
 use Guild\Rivet\Component\Button;
 use Guild\Rivet\Component\ButtonGroup;
+use Guild\Rivet\Component\Accordion\Accordion;
+use Guild\Rivet\Component\Accordion\AccordionPanel;
 use Guild\Rivet\Component\Card\Card;
 use Guild\Rivet\Component\Card\CardBody;
 use Guild\Rivet\Component\Card\CardImage;
+use Guild\Rivet\Component\Dialog\Dialog;
+use Guild\Rivet\Component\Dialog\DialogBody;
+use Guild\Rivet\Component\Dialog\DialogControls;
+use Guild\Rivet\Component\Disclosure;
+use Guild\Rivet\Component\Dropdown;
 use Guild\Rivet\Component\Form\Checkbox;
 use Guild\Rivet\Component\Form\FieldGroup;
 use Guild\Rivet\Component\Form\FileInput;
@@ -33,7 +40,10 @@ use Guild\Rivet\Component\ListComponent;
 use Guild\Rivet\Component\LoadingIndicator;
 use Guild\Rivet\Component\Pagination;
 use Guild\Rivet\Component\SegmentedButtons;
+use Guild\Rivet\Component\Sidenav;
 use Guild\Rivet\Component\Table;
+use Guild\Rivet\Component\Tabs\Tab;
+use Guild\Rivet\Component\Tabs\Tabs;
 use Guild\Rivet\Render\ComponentRegistry;
 
 /**
@@ -57,6 +67,8 @@ final class Rivet
     public static function registry(): ComponentRegistry
     {
         return new ComponentRegistry([
+            Accordion::class,
+            AccordionPanel::class,
             Alert::class,
             Avatar::class,
             Badge::class,
@@ -65,6 +77,11 @@ final class Rivet
             ButtonGroup::class,
             Card::class,
             Checkbox::class,
+            Dialog::class,
+            DialogBody::class,
+            DialogControls::class,
+            Disclosure::class,
+            Dropdown::class,
             CardBody::class,
             CardImage::class,
             Column::class,
@@ -83,7 +100,10 @@ final class Rivet
             Row::class,
             Select::class,
             SegmentedButtons::class,
+            Sidenav::class,
+            Tab::class,
             Table::class,
+            Tabs::class,
             Textarea::class,
             TextInput::class,
             ToggleSwitch::class,

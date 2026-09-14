@@ -30,6 +30,7 @@ final class SvgIcon
      * @var array<string, list<string>>
      */
     private const array PATHS = [
+        'chevron-down' => ['m15.146 6.263-1.292-1.526L8 9.69 2.146 4.737.854 6.263 8 12.31l7.146-6.047Z'],
         'close' => ['m3.5 2.086 4.5 4.5 4.5-4.5L13.914 3.5 9.414 8l4.5 4.5-1.414 1.414-4.5-4.5-4.5 4.5L2.086 12.5l4.5-4.5-4.5-4.5L3.5 2.086Z'],
         'file' => ['M2 1h8.414L14 4.586V15H2V1Zm2 2v10h8V7.5H7.5V3H4Zm5.5 0v2.5H12v-.086L9.586 3H9.5Z'],
         'home' => ['m8 .798 7 4.667V15H9v-4.444H7V15H1V5.465L8 .798ZM3 6.535V13h2V8.556h6V13h2V6.535L8 3.202 3 6.535Z'],
@@ -60,6 +61,28 @@ final class SvgIcon
             'M15.414 8 9 1.586 7.586 3l5 5-5 5L9 14.414 15.414 8Z',
         ],
     ];
+
+    /**
+     * The accordion toggle's plus/minus.
+     *
+     * Kept apart from the table above because Rivet gives the vertical stroke its own
+     * class: its JavaScript animates that bar away to turn the plus into a minus.
+     */
+    public static function accordionToggle(): Html
+    {
+        return Html::el('svg')
+            ->attr('xmlns', 'http://www.w3.org/2000/svg')
+            ->attr('width', '16')
+            ->attr('height', '16')
+            ->attr('viewBox', '0 0 16 16')
+            ->attr('aria-hidden', 'true')
+            ->html(
+                '<g fill="currentColor">'
+                . '<path class="rvt-accordion__icon-bar" d="M8,15a1,1,0,0,1-1-1V2A1,1,0,0,1,9,2V14A1,1,0,0,1,8,15Z"/>'
+                . '<path d="M14,9H2A1,1,0,0,1,2,7H14a1,1,0,0,1,0,2Z"/>'
+                . '</g>',
+            );
+    }
 
     /**
      * Render one icon, marked aria-hidden because the control around it carries the name.
