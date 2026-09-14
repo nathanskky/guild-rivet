@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Guild\Rivet\Test\Render\Fixture;
 
 use Guild\Rivet\Component\Component;
+use Guild\Rivet\Render\RenderContext;
 
 /**
  * Stand-in for a real component in RenderContext tests.
@@ -14,7 +15,7 @@ use Guild\Rivet\Component\Component;
  */
 abstract class StubComponent extends Component
 {
-    public function render(string $content = ''): string
+    public function render(RenderContext $context, string $content = ''): string
     {
         return $content;
     }
