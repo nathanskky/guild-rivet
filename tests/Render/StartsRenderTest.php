@@ -32,7 +32,10 @@ final class StartsRenderTest extends TestCase
 
     public function testAContextWithNoDefaultsSaysSo(): void
     {
-        self::assertNull(new RenderContext()->pageDefaults());
+        self::assertNull(
+            new RenderContext()->pageDefaults(),
+            'A context with no configured defaults reports none, rather than inventing an empty one.',
+        );
     }
 
     public function testOpeningAPageResetsIdNumbering(): void
