@@ -20,12 +20,21 @@ final class RivetAssetsTest extends TestCase
             $assets->coreCss(),
             'The pinned version is the single place a Rivet release is named.',
         );
-        self::assertSame('https://unpkg.com/rivet-core@2.9.1/js/rivet.min.js', $assets->coreJs());
+        self::assertSame(
+            'https://unpkg.com/rivet-core@2.9.1/js/rivet.min.js',
+            $assets->coreJs(),
+            'The core script is built from the same pinned version as the stylesheet.',
+        );
         self::assertSame(
             'https://unpkg.com/rivet-icons@3.0.1/dist/rivet-icon-element.css',
             $assets->iconsCss(),
+            'The icons package is versioned independently of core.',
         );
-        self::assertSame('https://unpkg.com/rivet-icons@3.0.1/dist/rivet-icons.js', $assets->iconsJs());
+        self::assertSame(
+            'https://unpkg.com/rivet-icons@3.0.1/dist/rivet-icons.js',
+            $assets->iconsJs(),
+            'The icons script is built from the same pinned icons version as its stylesheet.',
+        );
     }
 
     public function testAVersionChangeFlowsIntoEveryUrl(): void

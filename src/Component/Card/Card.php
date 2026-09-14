@@ -12,9 +12,11 @@ use Guild\Rivet\Render\RenderContext;
 /**
  * Rivet card.
  *
- * Rivet's `[ ]` bracket convention around utility classes is a documentation
- * readability device, not markup, so it is not reproduced here. Add utilities such as
- * `rvt-flow` through the usual `class` attribute.
+ * Rivet's docs wrap groups of utility classes in `[ ]`. The brackets are CUBE-CSS
+ * grouping tokens that appear in Rivet's own rendered HTML, not a documentation-only
+ * device — but they match no selector, so they are inert, and this library's class
+ * deduplication and ordering could not reproduce them even if it tried. Add utilities
+ * such as `rvt-flow` through the usual `class` attribute, without the brackets.
  *
  * @see https://rivet.iu.edu/components/card/
  */

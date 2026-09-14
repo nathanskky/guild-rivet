@@ -311,7 +311,7 @@ errors marks its control invalid without being asked.
 
 ## Components
 
-44 components. `block` takes a body; `leaf` does not.
+49 components. `block` takes a body; `leaf` does not.
 
 | Component | | Notes |
 |---|---|---|
@@ -345,6 +345,11 @@ errors marks its control invalid without being asked.
 | `rvt_input_group_addon` | block | requires `rvt_input_group` |
 | `rvt_list` | block | |
 | `rvt_loader` | leaf | |
+| `rvt_page` | block | assembles the whole document; needs `PageDefaults` |
+| `rvt_page_breadcrumbs` | block | slot; lands in the heading band |
+| `rvt_page_scripts` | block | slot; lands before `</body>`, after Rivet's script |
+| `rvt_page_sidebar` | block | slot; requires the `sidebar` or `anchored_sidebar` layout |
+| `rvt_page_styles` | block | slot; lands in `<head>`, after Rivet's stylesheet |
 | `rvt_pagination` | leaf | unavailable arrows drop the link entirely |
 | `rvt_radio` | leaf | **requires** `rvt_field_group` |
 | `rvt_row` | block | |

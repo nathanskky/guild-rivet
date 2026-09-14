@@ -52,6 +52,12 @@ Markup below was read from Rivet's published previews at
 
 They are **structurally different documents**, not one structure with modifiers.
 
+The `[ ]` around some class groups below are copied from Rivet's own markup — they are
+CUBE-CSS grouping tokens, not a documentation-only device, and Rivet's rendered HTML does
+carry them. This library omits them anyway: they match no selector, so they are inert,
+and they cannot survive this library's class deduplication and ordering, which treats
+each class token independently rather than preserving a bracketed group.
+
 | | `<main>` is | Sidebar | Breadcrumbs + `<h1>` |
 |---|---|---|---|
 | `SingleColumn` | flex column | — | shaded full-bleed band above the wrapper |

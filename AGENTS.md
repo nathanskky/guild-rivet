@@ -57,10 +57,11 @@ at `max`, the strictest setting in the workspace.
 
 ```
 src/
-  Component/      one class per component; Card/, Dialog/, Form/, Grid/, Accordion/, Tabs/
+  Component/      one class per component; Card/, Dialog/, Form/, Grid/, Accordion/, Tabs/, Page/
     Internal/     SvgIcon — the icons components embed in their own chrome
+  Page/           PageDefaults, RivetAssets — application-wide config the Page component reads
   Html/           Html (element builder), Attributes, Modifier
-  Render/         Renderer, RenderContext, IdGenerator, ComponentFactory, ComponentRegistry
+  Render/         Renderer, RenderContext, IdGenerator, ComponentFactory, ComponentRegistry, StartsRender
   Enum/           one enum per variant axis
   Exception/
   Twig/           RivetExtension, token parser, nodes, runtime
@@ -143,9 +144,12 @@ mocks. On top of that:
 - **A Latte node's `getIterator()` is a by-reference generator**, where `yield from []` is
   a fatal error. Use Latte's `false && yield;` idiom only when there is nothing else to
   yield.
-- **`Renderer::reset()` has to be called by the integration**, once per page. Neither
-  engine exposes a reliable "top-level render started" hook. Identifiers stay unique
-  without it but climb for the life of the process.
+- **`Renderer::reset()` has to be called by the integration, once per page — unless the
+  page is rendered through `rvt_page`.** `Page` implements `StartsRender`, so opening one
+  resets the context itself; the manual call is only needed when rendering components
+  directly, outside that layout. Neither engine exposes a reliable "top-level render
+  started" hook, which is why a component has to say so instead. Identifiers stay unique
+  without a reset but climb for the life of the process.
 - **`SvgIcon` is `@internal` and holds real path data copied from Rivet.** Do not edit a
   path by hand; re-fetch it.
 
