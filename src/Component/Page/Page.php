@@ -164,7 +164,7 @@ final class Page extends Component implements StartsRender
      */
     private function main(PageDefaults $defaults, string $content): string
     {
-        if ($this->sidebar !== '') {
+        if ($this->sidebar !== '' && $this->layout === PageLayout::SingleColumn) {
             throw new InvalidArgumentException(
                 'A sidebar was set on a page using the single_column layout, which has no sidebar region. '
                 . 'Use the sidebar or anchored_sidebar layout instead.'

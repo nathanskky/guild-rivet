@@ -5,11 +5,14 @@ declare(strict_types=1);
 namespace Guild\Rivet\Test\Component\Page;
 
 use Guild\Rivet\Component\Page\Page;
+use Guild\Rivet\Enum\PageLayout;
 use Guild\Rivet\Exception\ConfigurationException;
+use Guild\Rivet\Exception\InvalidArgumentException;
 use Guild\Rivet\Page\PageDefaults;
 use Guild\Rivet\Page\RivetAssets;
 use Guild\Rivet\Render\RenderContext;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 #[CoversClass(Page::class)]
@@ -152,6 +155,42 @@ final class PageTest extends TestCase
             $html,
             'A page-level description takes precedence over the application-wide default.',
         );
+    }
+
+    public function testASidebarSetOnTheSingleColumnLayoutIsRejected(): void
+    {
+        $page = new Page();
+        $page->setSidebar('<nav>side</nav>');
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage(
+            'A sidebar was set on a page using the single_column layout, which has no sidebar region. '
+            . 'Use the sidebar or anchored_sidebar layout instead.'
+        );
+
+        $this->render($page);
+    }
+
+    #[DataProvider('layoutsWithASidebarRegion')]
+    public function testASidebarIsNotRejectedUnderALayoutThatHasSomewhereToPutIt(PageLayout $layout): void
+    {
+        $page = new Page(layout: $layout);
+        $page->setSidebar('<nav>side</nav>');
+
+        self::assertStringContainsString(
+            '<body class="rvt-layout">',
+            $this->render($page),
+            'The single-column guard must name the layout it actually rejects, so a sidebar layout is unaffected by it.',
+        );
+    }
+
+    /**
+     * @return iterable<string, array{PageLayout}>
+     */
+    public static function layoutsWithASidebarRegion(): iterable
+    {
+        yield 'sidebar' => [PageLayout::Sidebar];
+        yield 'anchored sidebar' => [PageLayout::AnchoredSidebar];
     }
 
     public function testAPageWithoutConfiguredDefaultsSaysHowToFixIt(): void
