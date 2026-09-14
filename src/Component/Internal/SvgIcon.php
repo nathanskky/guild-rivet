@@ -30,6 +30,8 @@ final class SvgIcon
      * @var array<string, list<string>>
      */
     private const array PATHS = [
+        'menu' => ['M15 4H1V2h14v2Zm0 5H1V7h14v2ZM1 14h14v-2H1v2Z'],
+        'search' => ['M7 2a5 5 0 1 0 0 10A5 5 0 0 0 7 2ZM0 7a7 7 0 1 1 12.606 4.192l3.101 3.1-1.414 1.415-3.1-3.1A7 7 0 0 1 0 7Z'],
         'chevron-down' => ['m15.146 6.263-1.292-1.526L8 9.69 2.146 4.737.854 6.263 8 12.31l7.146-6.047Z'],
         'close' => ['m3.5 2.086 4.5 4.5 4.5-4.5L13.914 3.5 9.414 8l4.5 4.5-1.414 1.414-4.5-4.5-4.5 4.5L2.086 12.5l4.5-4.5-4.5-4.5L3.5 2.086Z'],
         'file' => ['M2 1h8.414L14 4.586V15H2V1Zm2 2v10h8V7.5H7.5V3H4Zm5.5 0v2.5H12v-.086L9.586 3H9.5Z'],
@@ -81,6 +83,49 @@ final class SvgIcon
                 . '<path class="rvt-accordion__icon-bar" d="M8,15a1,1,0,0,1-1-1V2A1,1,0,0,1,9,2V14A1,1,0,0,1,8,15Z"/>'
                 . '<path d="M14,9H2A1,1,0,0,1,2,7H14a1,1,0,0,1,0,2Z"/>'
                 . '</g>',
+            );
+    }
+
+    /**
+     * The IU trident, as the header lockup uses it.
+     *
+     * A different drawing from the footer's, on its own 28x34 viewBox. Reproduced
+     * exactly: IU's guidance is that the trident appears unmodified.
+     */
+    public static function lockupTrident(): Html
+    {
+        return Html::el('svg')
+            ->attr('xmlns', 'http://www.w3.org/2000/svg')
+            ->class('rvt-lockup__trident')
+            ->attr('viewBox', '0 0 28 34')
+            ->attr('aria-hidden', 'true')
+            ->html(
+                '<path fill="currentColor" d="M-3.34344e-05 4.70897H8.83308V7.174H7.1897V21.1426H10.6134V2.72321H8.83308'
+                . 'V0.121224H18.214V2.65476H16.2283V21.1426H19.7889V7.174H18.214V4.64047H27.0471V7.174H25.0614V23.6761L21.7746 '
+                . '26.8944H16.2967V30.455H18.214V33.8787H8.76463V30.592H10.6819V26.8259H5.20403L1.91726 23.6077V7.174H'
+                . '-3.34344e-05V4.70897Z"/>',
+            );
+    }
+
+    /**
+     * The IU trident, as the footer uses it.
+     *
+     * A polygon rather than a path, and reproduced exactly: IU's guidance is that the
+     * trident appears unmodified.
+     */
+    public static function footerTrident(): Html
+    {
+        return Html::el('svg')
+            ->attr('xmlns', 'http://www.w3.org/2000/svg')
+            ->attr('width', '24')
+            ->attr('height', '24')
+            ->attr('viewBox', '0 0 24 24')
+            ->attr('aria-hidden', 'true')
+            ->html(
+                '<polygon fill="currentColor" points="15.3 3.19 15.3 5 16.55 5 16.55 15.07 13.9 15.07 13.9 1.81 '
+                . '15.31 1.81 15.31 0 8.72 0 8.72 1.81 10.12 1.81 10.12 15.07 7.45 15.07 7.45 5 8.7 5 8.7 3.19 '
+                . '2.5 3.19 2.5 5 3.9 5 3.9 16.66 6.18 18.98 10.12 18.98 10.12 21.67 8.72 21.67 8.72 24 15.3 24 '
+                . '15.3 21.67 13.9 21.67 13.9 18.98 17.82 18.98 20.09 16.66 20.09 5 21.5 5 21.5 3.19 15.3 3.19"/>',
             );
     }
 

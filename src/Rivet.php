@@ -34,6 +34,8 @@ use Guild\Rivet\Component\Form\ToggleSwitch;
 use Guild\Rivet\Component\Grid\Column;
 use Guild\Rivet\Component\Grid\Container;
 use Guild\Rivet\Component\Grid\Row;
+use Guild\Rivet\Component\Footer;
+use Guild\Rivet\Component\Header;
 use Guild\Rivet\Component\Icon;
 use Guild\Rivet\Component\InlineAlert;
 use Guild\Rivet\Component\ListComponent;
@@ -41,6 +43,8 @@ use Guild\Rivet\Component\LoadingIndicator;
 use Guild\Rivet\Component\Pagination;
 use Guild\Rivet\Component\SegmentedButtons;
 use Guild\Rivet\Component\Sidenav;
+use Guild\Rivet\Component\StepIndicator;
+use Guild\Rivet\Component\Subnav;
 use Guild\Rivet\Component\Table;
 use Guild\Rivet\Component\Tabs\Tab;
 use Guild\Rivet\Component\Tabs\Tabs;
@@ -89,6 +93,8 @@ final class Rivet
             FieldGroup::class,
             FileInput::class,
             FormField::class,
+            Footer::class,
+            Header::class,
             Icon::class,
             InlineAlert::class,
             InputGroup::class,
@@ -101,6 +107,8 @@ final class Rivet
             Select::class,
             SegmentedButtons::class,
             Sidenav::class,
+            StepIndicator::class,
+            Subnav::class,
             Tab::class,
             Table::class,
             Tabs::class,
