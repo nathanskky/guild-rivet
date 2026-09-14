@@ -6,6 +6,7 @@ namespace Guild\Rivet\Test\Twig;
 
 use Guild\Rivet\Component\Alert;
 use Guild\Rivet\Component\Badge;
+use Guild\Rivet\Component\Button;
 use Guild\Rivet\Render\ComponentRegistry;
 use Guild\Rivet\Render\Renderer;
 use Guild\Rivet\Twig\RivetExtension;
@@ -45,6 +46,15 @@ final class RivetExtensionTest extends TestCase
             '&lt;span',
             $this->render("{{ rvt_badge(text: 'New') }}"),
             'The function is declared html-safe, so Twig must not escape the markup it returns.',
+        );
+    }
+
+    public function testABlockComponentAlsoHasAShortFunctionForm(): void
+    {
+        self::assertSame(
+            '<button class="rvt-button rvt-button--danger" type="button">Delete</button>',
+            $this->render("{{ rvt_button('Delete', purpose: 'danger') }}"),
+            'A button whose body is just a label should not need a closing tag.',
         );
     }
 
@@ -118,7 +128,7 @@ final class RivetExtensionTest extends TestCase
      */
     private function render(string $template, array $context = []): string
     {
-        $registry = new ComponentRegistry([Badge::class, Alert::class]);
+        $registry = new ComponentRegistry([Badge::class, Button::class, Alert::class]);
         $renderer = new Renderer($registry);
 
         $twig = new Environment(new ArrayLoader(['t' => $template]));

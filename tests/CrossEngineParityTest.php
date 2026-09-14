@@ -6,6 +6,7 @@ namespace Guild\Rivet\Test;
 
 use Guild\Rivet\Component\Alert;
 use Guild\Rivet\Component\Badge;
+use Guild\Rivet\Component\Button;
 use Guild\Rivet\Latte\RivetExtension as LatteExtension;
 use Guild\Rivet\Render\ComponentRegistry;
 use Guild\Rivet\Render\Renderer;
@@ -61,6 +62,16 @@ final class CrossEngineParityTest extends TestCase
             "{rvtBadge 'New', data_testid: 'b', class: 'rvt-m-top-md'}",
         ];
 
+        yield 'block component in its short form' => [
+            "{{ rvt_button('Delete', purpose: 'danger') }}",
+            "{rvtButton 'Delete', purpose: 'danger' /}",
+        ];
+
+        yield 'block component with an icon body' => [
+            '{% rvt_button purpose="success" %}<svg></svg><span>Add</span>{% endrvt_button %}',
+            "{rvtButton purpose: 'success'}<svg></svg><span>Add</span>{/rvtButton}",
+        ];
+
         yield 'block component' => [
             "{% rvt_alert title='Notice' dismissible=false %}<p>Body</p>{% endrvt_alert %}",
             "{rvtAlert title: 'Notice', dismissible: false}<p>Body</p>{/rvtAlert}",
@@ -89,7 +100,7 @@ final class CrossEngineParityTest extends TestCase
 
     private static function registry(): ComponentRegistry
     {
-        return new ComponentRegistry([Badge::class, Alert::class]);
+        return new ComponentRegistry([Badge::class, Button::class, Alert::class]);
     }
 
     private function renderTwig(string $template): string

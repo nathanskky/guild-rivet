@@ -14,8 +14,11 @@ use Twig\TwigFunction;
  * Makes every registered Rivet component available to Twig.
  *
  * Components appear as tags — paired where they take a body, single where they do not —
- * and those taking no body are additionally exposed as functions, which reads better
- * inline. Both forms compile to the same renderer call, so they cannot diverge.
+ * and every component is additionally exposed as a function, which reads better inline
+ * and is the natural form when a component's body is just a label. The function renders
+ * with no captured body, so components that support both read their `text` argument
+ * instead. Latte reaches the same short form through its self-closing `{tag /}` syntax.
+ * Every form compiles to the same renderer call, so they cannot diverge.
  */
 final class RivetExtension extends AbstractExtension
 {
@@ -40,10 +43,6 @@ final class RivetExtension extends AbstractExtension
         $functions = [];
 
         foreach ($this->registry->names() as $name) {
-            if ($this->registry->classFor($name)::acceptsContent()) {
-                continue;
-            }
-
             $functions[] = new TwigFunction(
                 $name,
                 static function (Environment $environment, mixed ...$arguments) use ($name): Markup {

@@ -6,6 +6,7 @@ namespace Guild\Rivet\Test\Latte;
 
 use Guild\Rivet\Component\Alert;
 use Guild\Rivet\Component\Badge;
+use Guild\Rivet\Component\Button;
 use Guild\Rivet\Latte\RivetExtension;
 use Guild\Rivet\Render\ComponentRegistry;
 use Guild\Rivet\Render\Renderer;
@@ -33,6 +34,15 @@ final class RivetExtensionTest extends TestCase
             '&lt;span',
             $this->render("{rvtBadge 'New'}"),
             "Latte's context-aware escaper must not touch markup the component already produced.",
+        );
+    }
+
+    public function testABlockComponentAlsoHasAShortVoidTagForm(): void
+    {
+        self::assertSame(
+            '<button class="rvt-button rvt-button--danger" type="button">Delete</button>',
+            $this->render("{rvtButton 'Delete', purpose: 'danger' /}"),
+            "Latte's self-closing tag syntax gives the same short form as Twig's function.",
         );
     }
 
@@ -97,7 +107,7 @@ final class RivetExtensionTest extends TestCase
      */
     private function render(string $template, array $parameters = []): string
     {
-        $registry = new ComponentRegistry([Badge::class, Alert::class]);
+        $registry = new ComponentRegistry([Badge::class, Button::class, Alert::class]);
 
         $latte = new Engine();
         $latte->setLoader(new StringLoader(['t' => $template]));

@@ -8,6 +8,7 @@ use Guild\Rivet\Enum\BadgeStyle;
 use Guild\Rivet\Enum\BadgeVariant;
 use Guild\Rivet\Html\Attributes;
 use Guild\Rivet\Html\Html;
+use Guild\Rivet\Html\Modifier;
 use Guild\Rivet\Render\RenderContext;
 
 /**
@@ -41,20 +42,12 @@ final class Badge extends Component
             ->render();
     }
 
-    /**
-     * Compose the two axes into the single modifier Rivet defines.
-     *
-     * Base + solid is the unmodified block; every other combination appends a suffix,
-     * and secondary hyphenates onto a non-base style (`rvt-badge--danger-secondary`).
-     */
     private function modifier(): ?string
     {
-        $isSecondary = $this->variant === BadgeVariant::Secondary;
-
-        if ($this->style === BadgeStyle::Base) {
-            return $isSecondary ? self::BLOCK . '--secondary' : null;
-        }
-
-        return self::BLOCK . '--' . $this->style->value . ($isSecondary ? '-secondary' : '');
+        return Modifier::compose(
+            self::BLOCK,
+            $this->style === BadgeStyle::Base ? null : $this->style->value,
+            $this->variant === BadgeVariant::Secondary,
+        );
     }
 }
