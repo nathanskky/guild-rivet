@@ -164,8 +164,7 @@ final class PageTest extends TestCase
 
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage(
-            'A sidebar was set on a page using the single_column layout, which has no sidebar region. '
-            . 'Use the sidebar or anchored_sidebar layout instead.'
+            'rvt_page_sidebar has nowhere to go in the single_column layout. Use the sidebar or anchored_sidebar layout.'
         );
 
         $this->render($page);

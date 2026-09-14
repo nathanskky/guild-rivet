@@ -156,19 +156,38 @@ final class Page extends Component implements StartsRender
     }
 
     /**
-     * The single-column layout has no region for a sidebar.
+     * Rivet's three blank-page layouts are structurally different documents rather than
+     * one structure with modifiers.
      *
-     * A sidebar reaching this layout means an rvt_page_sidebar slot was used on a page
-     * that did not ask for one of the sidebar layouts, which the codebase's fail-loudly
-     * convention says should surface immediately rather than being silently dropped.
+     * The single-column layout has no sidebar region, so a sidebar reaching it means an
+     * rvt_page_sidebar slot was used without asking for one of the two sidebar layouts,
+     * which the codebase's fail-loudly convention says should surface immediately rather
+     * than being silently dropped.
+     *
+     * Anchoring the sidebar to the viewport edge means main becomes the layout wrapper
+     * itself, which leaves nowhere above it for the full-bleed heading band the other two
+     * layouts use; breadcrumbs and the heading move into the content region instead.
      */
     private function main(PageDefaults $defaults, string $content): string
     {
         if ($this->sidebar !== '' && $this->layout === PageLayout::SingleColumn) {
-            throw new InvalidArgumentException(
-                'A sidebar was set on a page using the single_column layout, which has no sidebar region. '
-                . 'Use the sidebar or anchored_sidebar layout instead.'
-            );
+            throw new InvalidArgumentException(sprintf(
+                '%s has nowhere to go in the %s layout. Use the %s or %s layout.',
+                PageSidebar::name(),
+                PageLayout::SingleColumn->value,
+                PageLayout::Sidebar->value,
+                PageLayout::AnchoredSidebar->value,
+            ));
+        }
+
+        // Anchoring the sidebar to the viewport edge means main becomes the layout
+        // wrapper itself, which leaves nowhere above it for a full-bleed heading band.
+        if ($this->layout === PageLayout::AnchoredSidebar) {
+            return Html::el('main')
+                ->attr('id', 'main-content')
+                ->class('rvt-layout__wrapper', 'rvt-layout__wrapper--details')
+                ->html($this->anchoredSidebar() . $this->anchoredContent($defaults, $content))
+                ->render();
         }
 
         return Html::el('main')
@@ -178,10 +197,83 @@ final class Page extends Component implements StartsRender
             ->render();
     }
 
+    private function wrapper(PageDefaults $defaults, string $content): string
+    {
+        if ($this->layout === PageLayout::Sidebar) {
+            return Html::el('div')
+                ->class('rvt-layout__wrapper', 'rvt-layout__wrapper--details', $defaults->containerSize->value)
+                ->children(
+                    Html::el('div')
+                        ->class('rvt-layout__sidebar', 'rvt-p-top-xxl', 'rvt-flow', 'rvt-prose')
+                        ->attr('id', 'section-nav')
+                        ->html($this->sidebar),
+                    Html::el('div')->class('rvt-layout__content', 'rvt-p-top-xxl')->html($content),
+                )
+                ->render();
+        }
+
+        return Html::el('div')
+            ->class('rvt-layout__wrapper', 'rvt-p-tb-xxl')
+            ->children(Html::el('div')->class($defaults->containerSize->value)->html($content))
+            ->render();
+    }
+
+    private function anchoredSidebar(): string
+    {
+        return Html::el('div')
+            ->class('rvt-layout__sidebar', 'rvt-p-top-xxl', 'rvt-p-left-md', 'rvt-bg-black-000')
+            ->attr('id', 'section-nav')
+            ->html($this->sidebar)
+            ->render();
+    }
+
+    private function anchoredContent(PageDefaults $defaults, string $content): string
+    {
+        $inner = Html::el('div')
+            ->class(
+                $defaults->containerSize->value,
+                'rvt-m-top-xl',
+                'rvt-m-left-none',
+                'rvt-m-right-none',
+                'rvt-p-right-none',
+                'rvt-p-left-none',
+            );
+
+        $heading = $this->headingBlock();
+
+        if ($heading !== '') {
+            $inner->html($heading);
+        }
+
+        return Html::el('div')
+            ->class('rvt-layout__content', 'rvt-p-top-xxl', 'rvt-p-lr-md', 'rvt-p-lr-xxl-md-up')
+            ->children($inner->html($content))
+            ->render();
+    }
+
+    /**
+     * Breadcrumbs and the heading, without the band around them.
+     */
+    private function headingBlock(): string
+    {
+        if ($this->heading === null && $this->breadcrumbs === '') {
+            return '';
+        }
+
+        $block = Html::el('div')->class('rvt-prose')->html($this->breadcrumbs);
+
+        if ($this->heading !== null) {
+            $block->children(Html::el('h1')->class('rvt-m-top-xs')->text($this->heading));
+        }
+
+        return $block->render();
+    }
+
     /**
      * The shaded, full-bleed band holding breadcrumbs and the page heading.
      *
-     * Omitted entirely when there is neither.
+     * Omitted entirely when there is neither. Not used by the anchored-sidebar layout,
+     * which has nowhere above main to put a full-bleed band.
      */
     private function headingBand(PageDefaults $defaults): string
     {
@@ -200,14 +292,6 @@ final class Page extends Component implements StartsRender
         return Html::el('div')
             ->class('rvt-bg-black-000', 'rvt-border-bottom', 'rvt-p-top-xl')
             ->children($inner)
-            ->render();
-    }
-
-    private function wrapper(PageDefaults $defaults, string $content): string
-    {
-        return Html::el('div')
-            ->class('rvt-layout__wrapper', 'rvt-p-tb-xxl')
-            ->children(Html::el('div')->class($defaults->containerSize->value)->html($content))
             ->render();
     }
 
