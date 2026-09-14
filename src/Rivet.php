@@ -13,9 +13,14 @@ use Guild\Rivet\Component\ButtonGroup;
 use Guild\Rivet\Component\Card\Card;
 use Guild\Rivet\Component\Card\CardBody;
 use Guild\Rivet\Component\Card\CardImage;
+use Guild\Rivet\Component\Grid\Column;
+use Guild\Rivet\Component\Grid\Container;
+use Guild\Rivet\Component\Grid\Row;
 use Guild\Rivet\Component\Icon;
+use Guild\Rivet\Component\InlineAlert;
 use Guild\Rivet\Component\ListComponent;
 use Guild\Rivet\Component\LoadingIndicator;
+use Guild\Rivet\Component\Pagination;
 use Guild\Rivet\Component\SegmentedButtons;
 use Guild\Rivet\Component\Table;
 use Guild\Rivet\Render\ComponentRegistry;
@@ -50,9 +55,14 @@ final class Rivet
             Card::class,
             CardBody::class,
             CardImage::class,
+            Column::class,
+            Container::class,
             Icon::class,
+            InlineAlert::class,
             ListComponent::class,
             LoadingIndicator::class,
+            Pagination::class,
+            Row::class,
             SegmentedButtons::class,
             Table::class,
         ]);
