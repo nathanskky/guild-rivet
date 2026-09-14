@@ -12,6 +12,13 @@ use Guild\Rivet\Rivet;
  * Held apart from PageDefaults so that object stays readable, and so a self-hosted
  * application can point at its own files rather than disabling the tags altogether.
  * A version is named once here and flows into every URL.
+ *
+ * Deliberately emits no `integrity` attribute on any of the CDN tags. A Subresource
+ * Integrity hash is tied to one exact file, `version` and `iconsVersion` here are
+ * caller-configurable, and a hash that no longer matches the file it names blocks the
+ * asset from loading at all rather than degrading. An application that needs a hardened
+ * supply chain should self-host through `cssHref`/`jsSrc` (and their icons equivalents)
+ * and add its own integrity hash to the tag it controls.
  */
 final readonly class RivetAssets
 {

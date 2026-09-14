@@ -19,7 +19,7 @@ use Guild\Rivet\Enum\ContainerSize;
 final readonly class PageDefaults
 {
     /**
-     * @param  list<mixed>  $navItems  header navigation tree, as Header accepts
+     * @param  list<NavItem>  $navItems  header navigation tree, as Header accepts
      * @param  list<array{label?: string, href?: string}>  $footerLinks  extra footer links
      */
     public function __construct(
