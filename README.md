@@ -60,9 +60,11 @@ The `rvt_icon` component additionally needs the separate icons package:
 Components never depend on it for their own chrome — a dialog's close button works with
 only the core CSS and JS loaded.
 
-To pin a different version, self-host either file, or turn one off, configure
-`Guild\Rivet\Page\RivetAssets` on `PageDefaults` rather than editing the tags above — it
-and `Rivet::VERSION` are the only places a release is named.
+An application using `rvt_page` pins a different version, self-hosts either file, or drops
+one by configuring `Guild\Rivet\Page\RivetAssets` on `PageDefaults` — it and
+`Rivet::VERSION` are the only places a release is named. `RivetAssets` is read only through
+`PageDefaults`, so it has no effect on the hand-written snippets above: an application
+supplying Rivet by hand makes the same changes by editing those URLs directly.
 
 ## Setup
 
