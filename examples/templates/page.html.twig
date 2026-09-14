@@ -1,27 +1,17 @@
-{% rvt_header
-    title="Rivet for PHP"
-    subtitle="Indiana University"
-    search_action="/search"
-    items=[
-        {label: 'Overview', href: '#overview', current: true},
-        {label: 'Components', href: '#components'},
-        {label: 'More', href: '#more', children: [
-            {label: 'Forms', href: '#forms'},
-            {label: 'Navigation', href: '#nav'}
-        ]}
-    ]
-%}
-
-<main id="main-content">
-{% rvt_container %}
-
-  <h1 class="rvt-ts-32 rvt-m-top-lg">Components</h1>
+{% rvt_page title="Components" heading="Components" layout="sidebar" %}
+  {% rvt_page_sidebar %}
+    {{ rvt_sidenav(label: 'Sections', items: [
+        {label: 'Buttons', href: '#buttons'},
+        {label: 'Forms', href: '#forms'},
+        {label: 'Navigation', href: '#nav'}
+    ]) }}
+  {% endrvt_page_sidebar %}
 
   {% rvt_alert title="Scheduled maintenance" style="warning" %}
     <p>This system will be unavailable on August 1st.</p>
   {% endrvt_alert %}
 
-  <h2 class="rvt-ts-23 rvt-m-top-lg">Buttons</h2>
+  <h2 class="rvt-ts-23 rvt-m-top-lg" id="buttons">Buttons</h2>
   {% rvt_button_group %}
     {{ rvt_button('Save changes') }}
     {{ rvt_button('Cancel', fill: 'outline') }}
@@ -102,8 +92,4 @@
       {label: 'Personal information', href: '#', current: true},
       {label: 'Confirm', href: '#'}
   ]) }}
-
-{% endrvt_container %}
-</main>
-
-{{ rvt_footer() }}
+{% endrvt_page %}

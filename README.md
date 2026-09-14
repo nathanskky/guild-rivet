@@ -35,7 +35,11 @@ composer require guild/rivet
 
 ### Rivet's own assets
 
-This package emits markup and nothing else. Your application supplies Rivet:
+A page built with `rvt_page` emits Rivet's stylesheet and script by default, including the
+separate icons package `rvt_icon` needs — nothing to add yourself.
+
+An application that does not use `rvt_page`, or that turns the tags off on `PageDefaults`,
+supplies Rivet itself:
 
 ```html
 <link rel="stylesheet" href="https://unpkg.com/rivet-core@2.9.1/css/rivet.min.css">
@@ -55,6 +59,10 @@ The `rvt_icon` component additionally needs the separate icons package:
 
 Components never depend on it for their own chrome — a dialog's close button works with
 only the core CSS and JS loaded.
+
+To pin a different version, self-host either file, or turn one off, configure
+`Guild\Rivet\Page\RivetAssets` on `PageDefaults` rather than editing the tags above — it
+and `Rivet::VERSION` are the only places a release is named.
 
 ## Setup
 
@@ -116,6 +124,93 @@ $renderer->reset();
 Call this once per request. Without it identifiers stay unique but keep climbing for the
 life of the process, so the same page will not render identically twice. Neither engine
 offers a reliable hook for this, so the integration has to say when a page begins.
+
+Rendering `rvt_page` resets the context itself, so this call is only needed when rendering
+components directly, outside the layout below.
+
+## Page layout
+
+`rvt_page` assembles a whole document — doctype through `</html>` — so a page template
+carries only what is specific to that page: the header, the layout structure, the footer
+and Rivet's asset tags all come from it.
+
+### `PageDefaults`
+
+Configured once per application and passed to the `Renderer` constructor (or to
+`addRivet()` in a Guild application), holding everything that is identical on every page:
+
+```php
+new PageDefaults(
+    appTitle: 'Course Catalog',          // required; header lockup and <title> suffix
+    appSubtitle: 'Indiana University',
+    homeHref: '/',
+    navItems: [...],                     // header nav tree, as rvt_header accepts
+    searchAction: null,
+    footerLinks: [],                     // extra links; IU's required ones are built into rvt_footer
+    footerLight: false,
+    containerSize: ContainerSize::Large,
+    lang: 'en',
+    titleSeparator: ' · ',
+    description: null,                   // default meta description
+    assets: new RivetAssets(),
+);
+```
+
+Rendering `rvt_page` without one throws `Exception\ConfigurationException`, naming the fix.
+
+### Layouts
+
+`layout` takes one of three `PageLayout` values, each a structurally different document
+rather than one structure with modifiers:
+
+| Value | Sidebar | Heading and breadcrumbs |
+|---|---|---|
+| `single_column` (default) | none | shaded, full-bleed band above the content |
+| `sidebar` | inside the container, no background | same shaded band |
+| `anchored_sidebar` | flush to the viewport edge | inside the content, no band |
+
+The heading band (or, under `anchored_sidebar`, the content block in its place) appears
+only when the page sets a heading or has registered breadcrumbs. Filling
+`rvt_page_sidebar` under `single_column` throws — that layout has nowhere for it to go.
+
+### Slots
+
+Each slot renders nothing in place; it registers its content with the enclosing page, so
+it can be written anywhere in the body and still land in the right part of the document.
+Anything not inside one of these four is the main content:
+
+| Slot | Lands in |
+|---|---|
+| `rvt_page_styles` | `<head>`, after Rivet's stylesheet |
+| `rvt_page_scripts` | before `</body>`, after Rivet's script |
+| `rvt_page_sidebar` | the sidebar region |
+| `rvt_page_breadcrumbs` | the heading band, or the content block under `anchored_sidebar` |
+
+### Example
+
+```twig
+{% rvt_page title="Chemistry" heading="Chemistry" layout="sidebar" %}
+  {% rvt_page_breadcrumbs %}{{ rvt_breadcrumbs(items: [...]) }}{% endrvt_page_breadcrumbs %}
+  {% rvt_page_sidebar %}{{ rvt_sidenav(label: 'Programs', items: [...]) }}{% endrvt_page_sidebar %}
+
+  <p>Page content.</p>
+
+  {% rvt_page_styles %}<link rel="stylesheet" href="/css/chem.css">{% endrvt_page_styles %}
+  {% rvt_page_scripts %}<script src="/js/chem.js"></script>{% endrvt_page_scripts %}
+{% endrvt_page %}
+```
+
+```latte
+{rvtPage title: 'Chemistry', heading: 'Chemistry', layout: 'sidebar'}
+  {rvtPageBreadcrumbs}{rvtBreadcrumbs items: [...]}{/rvtPageBreadcrumbs}
+  {rvtPageSidebar}{rvtSidenav label: 'Programs', items: [...]}{/rvtPageSidebar}
+
+  <p>Page content.</p>
+
+  {rvtPageStyles}<link rel="stylesheet" href="/css/chem.css">{/rvtPageStyles}
+  {rvtPageScripts}<script src="/js/chem.js"></script>{/rvtPageScripts}
+{/rvtPage}
+```
 
 ## Usage
 

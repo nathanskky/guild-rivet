@@ -1,27 +1,17 @@
-{rvtHeader
-    title: 'Rivet for PHP',
-    subtitle: 'Indiana University',
-    searchAction: '/search',
-    items: [
-        ['label' => 'Overview', 'href' => '#overview', 'current' => true],
-        ['label' => 'Components', 'href' => '#components'],
-        ['label' => 'More', 'href' => '#more', 'children' => [
-            ['label' => 'Forms', 'href' => '#forms'],
-            ['label' => 'Navigation', 'href' => '#nav'],
-        ]],
-    ]
-}
-
-<main id="main-content">
-{rvtContainer}
-
-  <h1 class="rvt-ts-32 rvt-m-top-lg">Components</h1>
+{rvtPage title: 'Components', heading: 'Components', layout: 'sidebar'}
+  {rvtPageSidebar}
+    {rvtSidenav label: 'Sections', items: [
+        ['label' => 'Buttons', 'href' => '#buttons'],
+        ['label' => 'Forms', 'href' => '#forms'],
+        ['label' => 'Navigation', 'href' => '#nav'],
+    ]}
+  {/rvtPageSidebar}
 
   {rvtAlert title: 'Scheduled maintenance', style: 'warning'}
     <p>This system will be unavailable on August 1st.</p>
   {/rvtAlert}
 
-  <h2 class="rvt-ts-23 rvt-m-top-lg">Buttons</h2>
+  <h2 class="rvt-ts-23 rvt-m-top-lg" id="buttons">Buttons</h2>
   {rvtButtonGroup}
     {rvtButton 'Save changes' /}
     {rvtButton 'Cancel', fill: 'outline' /}
@@ -102,8 +92,4 @@
       ['label' => 'Personal information', 'href' => '#', 'current' => true],
       ['label' => 'Confirm', 'href' => '#'],
   ]}
-
-{/rvtContainer}
-</main>
-
-{rvtFooter}
+{/rvtPage}
