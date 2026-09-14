@@ -1,0 +1,56 @@
+{
+    "name": "guild/rivet",
+    "description": "IU Rivet Design System components for PHP, with native Twig and Latte integrations.",
+    "type": "library",
+    "authors": [
+        {
+            "name": "Nathan Skky Rodriguez",
+            "email": "nsrodrig@iu.edu"
+        }
+    ],
+    "require": {
+        "php": "~8.5.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^13.0",
+        "phpstan/phpstan": "^2.2",
+        "laravel/pint": "^1.32",
+        "twig/twig": "^3.28",
+        "latte/latte": "^3.1",
+        "symfony/dom-crawler": "^7.3",
+        "symfony/css-selector": "^7.3",
+        "spatie/phpunit-snapshot-assertions": "^5.2"
+    },
+    "suggest": {
+        "twig/twig": "^3.28 to use the Twig integration (Guild\\Rivet\\Twig\\RivetExtension).",
+        "latte/latte": "^3.1 to use the Latte integration (Guild\\Rivet\\Latte\\RivetExtension)."
+    },
+    "autoload": {
+        "psr-4": {
+            "Guild\\Rivet\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Guild\\Rivet\\Test\\": "tests"
+        }
+    },
+    "scripts": {
+        "test": "phpunit",
+        "analyse": "phpstan analyse",
+        "format": "pint",
+        "format:check": "pint --test",
+        "check": [
+            "@test",
+            "@analyse",
+            "@format:check"
+        ]
+    },
+    "scripts-descriptions": {
+        "test": "Run the guild-rivet test suite (fails if no tests run).",
+        "analyse": "Run PHPStan at level max over src/.",
+        "format": "Auto-fix code style with Pint (PSR-12).",
+        "format:check": "Check code style with Pint (PSR-12) without modifying files.",
+        "check": "Run tests, static analysis, then style check. Stops at the first failure."
+    }
+}
