@@ -18,7 +18,7 @@ final class AlertTest extends TestCase
         self::assertSame(
             '<div class="rvt-alert rvt-alert--info" role="alert" aria-labelledby="rvt-alert-1-title" data-rvt-alert="rvt-alert-1">'
             . '<div class="rvt-alert__title" id="rvt-alert-1-title">Maintenance</div>'
-            . '<p class="rvt-alert__message">Back on Tuesday.</p>'
+            . '<div class="rvt-alert__message">Back on Tuesday.</div>'
             . '</div>',
             new Alert('Maintenance', dismissible: false)->render(new RenderContext(), 'Back on Tuesday.'),
             'aria-labelledby must reference the title id, and both derive from one generated value.',
@@ -58,6 +58,17 @@ final class AlertTest extends TestCase
             'data-rvt-alert="rvt-alert-1"',
             $alert->render($context, 'x'),
             'Re-rendering the same instance must not consume another id and change its markup.',
+        );
+    }
+
+    public function testTheMessageSlotAcceptsArbitraryBlockContent(): void
+    {
+        $content = '<p>First.</p><ul class="rvt-list"><li>A point</li></ul>';
+
+        self::assertStringContainsString(
+            '<div class="rvt-alert__message">' . $content . '</div>',
+            new Alert('T', dismissible: false)->render(new RenderContext(), $content),
+            'Rivet documents a single paragraph, but nothing requires one; several paragraphs or a list must produce valid markup, which a <p> wrapper could not.',
         );
     }
 

@@ -21,6 +21,11 @@ use Guild\Rivet\Render\RenderContext;
  * Dismissal is driven by Rivet's JavaScript via `data-rvt-alert-close`; this component
  * ships no script of its own.
  *
+ * The message is wrapped in a `<div>` where Rivet's documentation shows a `<p>`. Nothing
+ * in Rivet requires a paragraph — `.rvt-alert__message` is a bare class selector that
+ * only zeroes its own margins — and a `<p>` cannot legally contain the several
+ * paragraphs or list a real message often needs.
+ *
  * @see https://rivet.iu.edu/components/alert/
  */
 final class Alert extends Component
@@ -55,7 +60,7 @@ final class Alert extends Component
             ->merge($this->extra)
             ->children(
                 Html::el('div')->class(self::BLOCK . '__title')->attr('id', $titleId)->text($this->title),
-                Html::el('p')->class(self::BLOCK . '__message')->html($content),
+                Html::el('div')->class(self::BLOCK . '__message')->html($content),
                 $this->dismissible ? $this->dismissButton() : null,
             )
             ->render();
