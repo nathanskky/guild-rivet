@@ -6,6 +6,7 @@ namespace Guild\Rivet\Render;
 
 use Guild\Rivet\Component\Component;
 use Guild\Rivet\Exception\ComponentContextException;
+use Guild\Rivet\Page\PageDefaults;
 
 /**
  * Tracks which components are currently open, and hands out element ids.
@@ -28,14 +29,24 @@ final class RenderContext
 
     private readonly IdGenerator $ids;
 
-    public function __construct(?IdGenerator $ids = null)
-    {
+    public function __construct(
+        ?IdGenerator $ids = null,
+        private readonly ?PageDefaults $pageDefaults = null,
+    ) {
         $this->ids = $ids ?? new SequentialIdGenerator();
     }
 
     public function ids(): IdGenerator
     {
         return $this->ids;
+    }
+
+    /**
+     * Application-wide page configuration, or null when none was supplied.
+     */
+    public function pageDefaults(): ?PageDefaults
+    {
+        return $this->pageDefaults;
     }
 
     public function open(Component $component): void
@@ -46,6 +57,14 @@ final class RenderContext
     public function close(): void
     {
         array_pop($this->stack);
+    }
+
+    /**
+     * Whether nothing is currently open.
+     */
+    public function isEmpty(): bool
+    {
+        return $this->stack === [];
     }
 
     /**

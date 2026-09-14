@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Guild\Rivet\Render;
 
 use Guild\Rivet\Component\Component;
+use Guild\Rivet\Exception\ComponentContextException;
+use Guild\Rivet\Page\PageDefaults;
 
 /**
  * The entry point both engine integrations compile their tags down to.
@@ -20,8 +22,9 @@ final class Renderer
     public function __construct(
         private readonly ComponentRegistry $registry,
         private readonly ComponentFactory $factory = new ComponentFactory(),
+        private readonly ?PageDefaults $pageDefaults = null,
     ) {
-        $this->context = new RenderContext();
+        $this->context = new RenderContext(pageDefaults: $this->pageDefaults);
     }
 
     public function context(): RenderContext
@@ -39,7 +42,7 @@ final class Renderer
      */
     public function reset(?IdGenerator $ids = null): void
     {
-        $this->context = new RenderContext($ids);
+        $this->context = new RenderContext($ids, $this->pageDefaults);
     }
 
     /**
@@ -56,6 +59,20 @@ final class Renderer
     public function open(string $name, array $arguments): RenderFrame
     {
         $component = $this->component($name, $arguments);
+
+        if ($component instanceof StartsRender) {
+            // A document cannot sit inside anything, and the reset below would silently
+            // renumber whatever was already open.
+            if ($this->context->isEmpty() === false) {
+                throw new ComponentContextException(sprintf(
+                    '%s cannot be nested inside another component.',
+                    $component::name(),
+                ));
+            }
+
+            $this->reset();
+        }
+
         $this->context->open($component);
 
         return new RenderFrame($component);
