@@ -13,6 +13,10 @@ use Guild\Rivet\Component\ButtonGroup;
 use Guild\Rivet\Component\Card\Card;
 use Guild\Rivet\Component\Card\CardBody;
 use Guild\Rivet\Component\Card\CardImage;
+use Guild\Rivet\Component\Form\FormField;
+use Guild\Rivet\Component\Form\Select;
+use Guild\Rivet\Component\Form\Textarea;
+use Guild\Rivet\Component\Form\TextInput;
 use Guild\Rivet\Component\Grid\Column;
 use Guild\Rivet\Component\Grid\Container;
 use Guild\Rivet\Component\Grid\Row;
@@ -57,14 +61,18 @@ final class Rivet
             CardImage::class,
             Column::class,
             Container::class,
+            FormField::class,
             Icon::class,
             InlineAlert::class,
             ListComponent::class,
             LoadingIndicator::class,
             Pagination::class,
             Row::class,
+            Select::class,
             SegmentedButtons::class,
             Table::class,
+            Textarea::class,
+            TextInput::class,
         ]);
     }
 }

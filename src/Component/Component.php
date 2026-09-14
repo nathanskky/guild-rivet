@@ -59,4 +59,15 @@ abstract class Component
     {
         return $this->resolvedId ??= $explicit ?? $context->ids()->next($prefix);
     }
+
+    /**
+     * This component's settled id, or null if it has not needed one yet.
+     *
+     * Lets a parent expose values derived from its id without forcing one into
+     * existence, so a component that never renders consumes no id.
+     */
+    protected function resolvedIdOrNull(): ?string
+    {
+        return $this->resolvedId;
+    }
 }
