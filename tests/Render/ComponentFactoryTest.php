@@ -6,6 +6,7 @@ namespace Guild\Rivet\Test\Render;
 
 use Guild\Rivet\Component\Alert;
 use Guild\Rivet\Component\Badge;
+use Guild\Rivet\Component\Form\FormField;
 use Guild\Rivet\Enum\AlertStyle;
 use Guild\Rivet\Exception\InvalidArgumentException;
 use Guild\Rivet\Render\ComponentFactory;
@@ -46,6 +47,38 @@ final class ComponentFactoryTest extends TestCase
             'rvt-alert--warning',
             $alert->render(new RenderContext()),
             'Calling from PHP should let the caller pass the enum directly.',
+        );
+    }
+
+    public function testSnakeCaseArgumentsReachCamelCaseConstructorParameters(): void
+    {
+        $field = new ComponentFactory()->create(FormField::class, [
+            'label' => 'Email',
+            'helper_text' => 'We only use this to contact you.',
+        ]);
+
+        self::assertStringContainsString(
+            '<div class="rvt-ts-14 rvt-color-black-500 rvt-m-top-xxs" id="rvt-field-1-helper">We only use this to contact you.</div>',
+            $field->render(new RenderContext(), '<input>'),
+            'Templates write snake_case because Twig cannot lex a hyphen, so it must reach a camelCase parameter rather than silently becoming an attribute on the label.',
+        );
+    }
+
+    public function testACamelCaseArgumentStillWorksWhenCallingFromPhp(): void
+    {
+        $field = new ComponentFactory()->create(FormField::class, ['label' => 'E', 'helperText' => 'Hint.']);
+
+        self::assertStringContainsString('id="rvt-field-1-helper">Hint.</div>', $field->render(new RenderContext(), '<input>'));
+    }
+
+    public function testAnUnmatchedSnakeCaseArgumentIsStillAnAttribute(): void
+    {
+        $badge = new ComponentFactory()->create(Badge::class, ['text' => 'x', 'data_testid' => 'b']);
+
+        self::assertStringContainsString(
+            'data-testid="b"',
+            $badge->render(new RenderContext()),
+            'Only names matching a parameter are consumed; the rest remain HTML attributes.',
         );
     }
 

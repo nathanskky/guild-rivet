@@ -79,17 +79,13 @@ final class FormField extends Component
     /**
      * The value for the control's `aria-describedby`, or null when nothing describes it.
      *
-     * Only sections that actually rendered are listed. Valid once the field has resolved
-     * its id.
+     * Only sections that actually rendered are listed. Takes the context so it settles
+     * the field's id itself: children ask for this while rendering the field's body,
+     * before the field has rendered anything of its own.
      */
-    public function describedBy(): ?string
+    public function describedBy(RenderContext $context): ?string
     {
-        $id = $this->resolvedIdOrNull();
-
-        if ($id === null) {
-            return null;
-        }
-
+        $id = $this->fieldId($context);
         $ids = [];
 
         if ($this->helperText !== null && $this->helperText !== '') {

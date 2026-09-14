@@ -51,7 +51,7 @@ abstract class FormControl extends Component
 
         return $control
             ->attr('id', $id ?? $field->fieldId($context))
-            ->attr('aria-describedby', $field->describedBy())
+            ->attr('aria-describedby', $field->describedBy($context))
             ->attr('required', $field->isRequired())
             ->attr('aria-required', $field->isRequired() ? 'true' : null)
             ->attr('aria-invalid', $field->hasErrors() ? 'true' : null);

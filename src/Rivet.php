@@ -13,10 +13,17 @@ use Guild\Rivet\Component\ButtonGroup;
 use Guild\Rivet\Component\Card\Card;
 use Guild\Rivet\Component\Card\CardBody;
 use Guild\Rivet\Component\Card\CardImage;
+use Guild\Rivet\Component\Form\Checkbox;
+use Guild\Rivet\Component\Form\FieldGroup;
+use Guild\Rivet\Component\Form\FileInput;
 use Guild\Rivet\Component\Form\FormField;
+use Guild\Rivet\Component\Form\InputGroup;
+use Guild\Rivet\Component\Form\InputGroupAddon;
+use Guild\Rivet\Component\Form\Radio;
 use Guild\Rivet\Component\Form\Select;
 use Guild\Rivet\Component\Form\Textarea;
 use Guild\Rivet\Component\Form\TextInput;
+use Guild\Rivet\Component\Form\ToggleSwitch;
 use Guild\Rivet\Component\Grid\Column;
 use Guild\Rivet\Component\Grid\Container;
 use Guild\Rivet\Component\Grid\Row;
@@ -57,22 +64,29 @@ final class Rivet
             Button::class,
             ButtonGroup::class,
             Card::class,
+            Checkbox::class,
             CardBody::class,
             CardImage::class,
             Column::class,
             Container::class,
+            FieldGroup::class,
+            FileInput::class,
             FormField::class,
             Icon::class,
             InlineAlert::class,
+            InputGroup::class,
+            InputGroupAddon::class,
             ListComponent::class,
             LoadingIndicator::class,
             Pagination::class,
+            Radio::class,
             Row::class,
             Select::class,
             SegmentedButtons::class,
             Table::class,
             Textarea::class,
             TextInput::class,
+            ToggleSwitch::class,
         ]);
     }
 }

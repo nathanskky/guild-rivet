@@ -37,8 +37,16 @@ final class TextInput extends FormControl
 
     public function render(RenderContext $context, string $content = ''): string
     {
+        // An input inside a group takes an extra class. Discovering that from the stack
+        // means the author states the relationship once, by nesting, rather than twice.
+        $inGroup = $context->closest(InputGroup::class) !== null;
+
         $input = Html::el('input')
-            ->class('rvt-text-input', $this->validationClass($context, $this->validation))
+            ->class(
+                'rvt-text-input',
+                $inGroup ? 'rvt-input-group__input' : null,
+                $this->validationClass($context, $this->validation),
+            )
             ->attr('type', $this->type->value);
 
         return $this->applyFieldState($input, $context, $this->id)

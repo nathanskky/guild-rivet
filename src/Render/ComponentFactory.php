@@ -41,8 +41,10 @@ final class ComponentFactory
         $extra = [];
 
         foreach ($arguments as $key => $value) {
-            if ($key !== 'extra' && array_key_exists($key, $parameters)) {
-                $named[$key] = $this->coerce($componentClass, $parameters[$key], $value);
+            $parameter = $key === 'extra' ? null : $this->parameterFor($key, $parameters);
+
+            if ($parameter !== null) {
+                $named[$parameter] = $this->coerce($componentClass, $parameters[$parameter], $value);
 
                 continue;
             }
@@ -74,6 +76,27 @@ final class ComponentFactory
         }
 
         return new $componentClass(...$named);
+    }
+
+    /**
+     * Match an argument name to a constructor parameter, accepting snake_case for a
+     * camelCase parameter.
+     *
+     * Templates write snake_case throughout, because Twig cannot lex a hyphen in tag
+     * syntax at all. Without this, `helper_text` would quietly miss `$helperText` and
+     * be emitted as a stray HTML attribute instead — wrong, and silent.
+     *
+     * @param  array<string, ReflectionParameter>  $parameters
+     */
+    private function parameterFor(string $key, array $parameters): ?string
+    {
+        if (array_key_exists($key, $parameters)) {
+            return $key;
+        }
+
+        $camelCase = lcfirst(str_replace('_', '', ucwords($key, '_')));
+
+        return array_key_exists($camelCase, $parameters) ? $camelCase : null;
     }
 
     /**

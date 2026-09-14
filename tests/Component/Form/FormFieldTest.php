@@ -51,12 +51,13 @@ final class FormFieldTest extends TestCase
     public function testHelperTextIsRenderedAndDescribesTheField(): void
     {
         $field = new FormField('Username', helperText: 'Letters and numbers only.');
-        $html = $field->render(new RenderContext(), '<input>');
+        $context = new RenderContext();
+        $html = $field->render($context, '<input>');
 
         self::assertStringContainsString('id="rvt-field-1-helper"', $html);
         self::assertSame(
             'rvt-field-1-helper',
-            $field->describedBy(),
+            $field->describedBy($context),
             'The control points aria-describedby at whichever sections actually rendered.',
         );
     }
@@ -74,11 +75,12 @@ final class FormFieldTest extends TestCase
     public function testDescribedByListsEverySectionThatRendered(): void
     {
         $field = new FormField('U', helperText: 'Hint.', errors: ['One.', 'Two.']);
-        $field->render(new RenderContext(), '<input>');
+        $context = new RenderContext();
+        $field->render($context, '<input>');
 
         self::assertSame(
             'rvt-field-1-helper rvt-field-1-error-1 rvt-field-1-error-2',
-            $field->describedBy(),
+            $field->describedBy($context),
             'Only sections that exist may be referenced; a dangling id reads as nothing to a screen reader.',
         );
     }
@@ -86,9 +88,10 @@ final class FormFieldTest extends TestCase
     public function testDescribedByIsEmptyWhenThereIsNothingToDescribe(): void
     {
         $field = new FormField('U');
-        $field->render(new RenderContext(), '<input>');
+        $context = new RenderContext();
+        $field->render($context, '<input>');
 
-        self::assertNull($field->describedBy(), 'A field with no helper or error needs no aria-describedby at all.');
+        self::assertNull($field->describedBy($context), 'A field with no helper or error needs no aria-describedby at all.');
     }
 
     public function testAnExplicitIdIsUsedForTheWholeField(): void
