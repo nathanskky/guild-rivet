@@ -31,13 +31,27 @@ use Guild\Rivet\Render\StartsRender;
  */
 final class Page extends Component implements StartsRender
 {
+    private const string WRAPPER = 'rvt-layout__wrapper';
+
+    private const string WRAPPER_DETAILS = 'rvt-layout__wrapper--details';
+
+    private const string SIDEBAR = 'rvt-layout__sidebar';
+
+    private const string PADDING_TOP_XXL = 'rvt-p-top-xxl';
+
+    private const string SECTION_NAV = 'section-nav';
+
     private string $styles = '';
 
     private string $scripts = '';
 
     private string $sidebar = '';
 
+    private bool $sidebarSet = false;
+
     private string $breadcrumbs = '';
+
+    private bool $breadcrumbsSet = false;
 
     public function __construct(
         private readonly ?string $title = null,
@@ -73,13 +87,39 @@ final class Page extends Component implements StartsRender
         $this->scripts .= $html;
     }
 
+    /**
+     * A page has one sidebar. A second call almost always means two rvt_page_sidebar
+     * blocks in the same page, which would otherwise silently discard the first one's
+     * content — the same failure mode the single-column guard above exists to prevent.
+     */
     public function setSidebar(string $html): void
     {
+        if ($this->sidebarSet) {
+            throw new InvalidArgumentException(sprintf(
+                '%s can only be used once. A page has one sidebar.',
+                PageSidebar::name(),
+            ));
+        }
+
+        $this->sidebarSet = true;
         $this->sidebar = $html;
     }
 
+    /**
+     * A page has one set of breadcrumbs. A second call almost always means two
+     * rvt_page_breadcrumbs blocks in the same page, which would otherwise silently
+     * discard the first one's content.
+     */
     public function setBreadcrumbs(string $html): void
     {
+        if ($this->breadcrumbsSet) {
+            throw new InvalidArgumentException(sprintf(
+                '%s can only be used once. A page has one set of breadcrumbs.',
+                PageBreadcrumbs::name(),
+            ));
+        }
+
+        $this->breadcrumbsSet = true;
         $this->breadcrumbs = $html;
     }
 
@@ -114,7 +154,7 @@ final class Page extends Component implements StartsRender
             $head->children(Html::el('link')->attr('rel', 'stylesheet')->attr('href', $defaults->assets->coreCss()));
         }
 
-        if ($defaults->assets->icons) {
+        if ($defaults->assets->enabled && $defaults->assets->icons) {
             $head->children(Html::el('link')->attr('rel', 'stylesheet')->attr('href', $defaults->assets->iconsCss()));
         }
 
@@ -185,7 +225,7 @@ final class Page extends Component implements StartsRender
         if ($this->layout === PageLayout::AnchoredSidebar) {
             return Html::el('main')
                 ->attr('id', 'main-content')
-                ->class('rvt-layout__wrapper', 'rvt-layout__wrapper--details')
+                ->class(self::WRAPPER, self::WRAPPER_DETAILS)
                 ->html($this->anchoredSidebar() . $this->anchoredContent($defaults, $content))
                 ->render();
         }
@@ -201,19 +241,19 @@ final class Page extends Component implements StartsRender
     {
         if ($this->layout === PageLayout::Sidebar) {
             return Html::el('div')
-                ->class('rvt-layout__wrapper', 'rvt-layout__wrapper--details', $defaults->containerSize->value)
+                ->class(self::WRAPPER, self::WRAPPER_DETAILS, $defaults->containerSize->value)
                 ->children(
                     Html::el('div')
-                        ->class('rvt-layout__sidebar', 'rvt-p-top-xxl', 'rvt-flow', 'rvt-prose')
-                        ->attr('id', 'section-nav')
+                        ->class(self::SIDEBAR, self::PADDING_TOP_XXL, 'rvt-flow', 'rvt-prose')
+                        ->attr('id', self::SECTION_NAV)
                         ->html($this->sidebar),
-                    Html::el('div')->class('rvt-layout__content', 'rvt-p-top-xxl')->html($content),
+                    Html::el('div')->class('rvt-layout__content', self::PADDING_TOP_XXL)->html($content),
                 )
                 ->render();
         }
 
         return Html::el('div')
-            ->class('rvt-layout__wrapper', 'rvt-p-tb-xxl')
+            ->class(self::WRAPPER, 'rvt-p-tb-xxl')
             ->children(Html::el('div')->class($defaults->containerSize->value)->html($content))
             ->render();
     }
@@ -221,8 +261,8 @@ final class Page extends Component implements StartsRender
     private function anchoredSidebar(): string
     {
         return Html::el('div')
-            ->class('rvt-layout__sidebar', 'rvt-p-top-xxl', 'rvt-p-left-md', 'rvt-bg-black-000')
-            ->attr('id', 'section-nav')
+            ->class(self::SIDEBAR, self::PADDING_TOP_XXL, 'rvt-p-left-md', 'rvt-bg-black-000')
+            ->attr('id', self::SECTION_NAV)
             ->html($this->sidebar)
             ->render();
     }
@@ -246,9 +286,22 @@ final class Page extends Component implements StartsRender
         }
 
         return Html::el('div')
-            ->class('rvt-layout__content', 'rvt-p-top-xxl', 'rvt-p-lr-md', 'rvt-p-lr-xxl-md-up')
+            ->class('rvt-layout__content', self::PADDING_TOP_XXL, 'rvt-p-lr-md', 'rvt-p-lr-xxl-md-up')
             ->children($inner->html($content))
             ->render();
+    }
+
+    /**
+     * Whether there is anything to put in the heading region at all: a heading, or
+     * breadcrumbs registered through the slot.
+     *
+     * The single rule behind both headingBlock() and headingBand() skipping themselves
+     * "on the same condition" — kept in one place so the two structures it feeds cannot
+     * drift apart on what counts as nothing to show.
+     */
+    private function hasHeadingContent(): bool
+    {
+        return $this->heading !== null || $this->breadcrumbs !== '';
     }
 
     /**
@@ -256,7 +309,7 @@ final class Page extends Component implements StartsRender
      */
     private function headingBlock(): string
     {
-        if ($this->heading === null && $this->breadcrumbs === '') {
+        if (! $this->hasHeadingContent()) {
             return '';
         }
 
@@ -277,7 +330,7 @@ final class Page extends Component implements StartsRender
      */
     private function headingBand(PageDefaults $defaults): string
     {
-        if ($this->heading === null && $this->breadcrumbs === '') {
+        if (! $this->hasHeadingContent()) {
             return '';
         }
 
@@ -304,7 +357,7 @@ final class Page extends Component implements StartsRender
                 . '<script>Rivet.init()</script>';
         }
 
-        if ($defaults->assets->icons) {
+        if ($defaults->assets->enabled && $defaults->assets->icons) {
             $scripts .= Html::el('script')
                 ->attr('type', 'module')
                 ->attr('src', $defaults->assets->iconsJs())

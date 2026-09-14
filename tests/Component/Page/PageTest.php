@@ -75,6 +75,21 @@ final class PageTest extends TestCase
         );
     }
 
+    public function testDisablingAssetsAloneAlsoTurnsOffTheIcons(): void
+    {
+        $html = $this->render(new Page(), new PageDefaults(
+            appTitle: 'Course Catalog',
+            assets: new RivetAssets(enabled: false),
+        ));
+
+        self::assertStringNotContainsString(
+            'unpkg.com',
+            $html,
+            'enabled: false must turn off every CDN tag, including icons, without icons also having to be set '
+            . 'explicitly — otherwise an application serving Rivet itself still double-loads the icons package.',
+        );
+    }
+
     public function testTheBodyCarriesTheLayoutClassAndTheContentIsInsideMain(): void
     {
         $html = $this->render(new Page(), content: '<p>Body</p>');
@@ -190,6 +205,28 @@ final class PageTest extends TestCase
     {
         yield 'sidebar' => [PageLayout::Sidebar];
         yield 'anchored sidebar' => [PageLayout::AnchoredSidebar];
+    }
+
+    public function testASecondSidebarIsRejectedRatherThanSilentlyReplacingTheFirst(): void
+    {
+        $page = new Page(layout: PageLayout::Sidebar);
+        $page->setSidebar('<nav>first</nav>');
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('rvt_page_sidebar can only be used once. A page has one sidebar.');
+
+        $page->setSidebar('<nav>second</nav>');
+    }
+
+    public function testASecondSetOfBreadcrumbsIsRejectedRatherThanSilentlyReplacingTheFirst(): void
+    {
+        $page = new Page();
+        $page->setBreadcrumbs('<nav>first</nav>');
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('rvt_page_breadcrumbs can only be used once. A page has one set of breadcrumbs.');
+
+        $page->setBreadcrumbs('<nav>second</nav>');
     }
 
     public function testAPageWithoutConfiguredDefaultsSaysHowToFixIt(): void
