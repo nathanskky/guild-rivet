@@ -134,10 +134,23 @@ final class PageTest extends TestCase
 
     public function testADescriptionIsEmittedAndThePageOverridesTheApplication(): void
     {
+        $html = $this->render(
+            new Page(description: 'All chemistry courses'),
+            new PageDefaults(
+                appTitle: 'Course Catalog',
+                description: 'A catalog of every course the university offers.',
+            ),
+        );
+
         self::assertStringContainsString(
             '<meta name="description" content="All chemistry courses">',
-            $this->render(new Page(description: 'All chemistry courses')),
+            $html,
             'A description passed to the page is emitted as the document description.',
+        );
+        self::assertStringNotContainsString(
+            'A catalog of every course the university offers.',
+            $html,
+            'A page-level description takes precedence over the application-wide default.',
         );
     }
 
