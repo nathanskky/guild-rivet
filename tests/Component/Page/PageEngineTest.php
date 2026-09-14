@@ -39,15 +39,15 @@ final class PageEngineTest extends TestCase
     {
         $html = $this->twig(self::TWIG);
 
-        self::assertStringStartsWith('<!doctype html>', $html);
+        self::assertStringStartsWith('<!doctype html>', $html, 'Twig assembles a whole document, not a component fragment.');
         self::assertStringContainsString('<link rel="stylesheet" href="/a.css"></head>', $html, 'A slot reaches the head.');
-        self::assertStringContainsString('<nav>side</nav>', $html);
-        self::assertStringContainsString('<p>Body</p>', $html);
+        self::assertStringContainsString('<nav>side</nav>', $html, 'The sidebar slot reaches its own region of the layout.');
+        self::assertStringContainsString('<p>Body</p>', $html, 'Content written outside any slot becomes the page\'s main content.');
     }
 
     public function testAPageRendersThroughLatte(): void
     {
-        self::assertStringStartsWith('<!doctype html>', $this->latte(self::LATTE));
+        self::assertStringStartsWith('<!doctype html>', $this->latte(self::LATTE), 'Latte assembles a whole document, not a component fragment.');
     }
 
     public function testBothEnginesAssembleTheSameDocument(): void
