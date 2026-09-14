@@ -28,7 +28,7 @@ root autoloader.
 | Package | Namespace | Role |
 |---|---|---|
 | `guild/rivet` *(this one)* | `Guild\Rivet\` | Rivet Design System components |
-| `guild/framework` | `Guild\Framework\` | Application kernel / DI container. Will expose this package via `ApplicationBuilder::addRivet()` |
+| `guild/framework` | `Guild\Framework\` | Application kernel / DI container. Exposes this package via `ApplicationBuilder::addRivet()`, and **depends on it** (`dev-develop`) |
 | `guild/access` | `Guild\Access\` | IU Login (OIDC) authentication library |
 | `guild/starter` | `Guild\Starter\` | Runnable example app |
 | `iu/notifications` | `IU\Notifications\` | IU Notifications API client. Fully independent |

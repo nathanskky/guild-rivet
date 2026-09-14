@@ -58,6 +58,26 @@ only the core CSS and JS loaded.
 
 ## Setup
 
+### Guild framework
+
+One call, after the template engine:
+
+```php
+return Application::configure($basePath)
+    ->addRouting()
+    ->addTemplateEngine(TemplateEngine::Twig)
+    ->addRivet()
+    ->enableAutoWiring()
+    ->create();
+```
+
+`addRivet()` reads which engine was chosen, so it must come after
+`addTemplateEngine()`; it throws `ConfigurationException` if it does not. Nothing else is
+needed — no config file, and no reset call, because the framework builds its container
+per request.
+
+The two sections below are for wiring the components into an engine yourself.
+
 ### Twig
 
 ```php
