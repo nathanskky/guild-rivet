@@ -38,11 +38,33 @@ new dependency broke `starter` the moment it was pushed, and nobody noticed beca
 Then `composer update guild/framework` should pull `guild/rivet` transitively. Confirm
 `vendor/guild/rivet/src/Page/` exists afterwards.
 
-Whether `starter` should *also* require `guild/rivet` directly is a judgement call — it
-does this already for `guild/access` (`^1.0`), which `framework` also requires, on the
-grounds that the app uses it directly. Templates here will use `rvt_*` tags directly, so
-the same argument applies. A direct requirement also means a version bump must satisfy
-two constraints, which is the documented trade-off in `starter/AGENTS.md`.
+Whether `starter` should *also* require `guild/rivet` directly is an open question, and
+the precedent is less instructive than it looks.
+
+`starter` requires `guild/access` directly at `^1.0` even though `framework` requires it
+too. That was **not** because the application uses it directly — it was a workaround:
+Composer errored without it. The belief is that the direct requirement stops being
+necessary once every package is resolved through proper tags rather than branch tips, but
+**that has not been verified**, and `starter/AGENTS.md` records the arrangement without
+recording why.
+
+So do not copy the `guild/access` pattern on the assumption it expresses a deliberate
+policy. Add the VCS repository entry first, and only add a direct `guild/rivet`
+requirement if resolution actually fails without one.
+
+Worth verifying while here, since it costs one command:
+
+```bash
+# in starter, after adding the guild-rivet VCS repository entry
+# temporarily drop "guild/access" from require, then:
+composer update --dry-run
+```
+
+If that resolves, the direct `guild/access` requirement is redundant today and the
+workaround can go. If it fails, capture the actual error — it is the only record anyone
+has of why the requirement exists. Note that `framework` and `rivet` are both currently
+consumed as `dev-develop`, so a clean answer to the "once everything is tagged" question
+needs re-testing after those are tagged.
 
 ## Current state, verified
 
