@@ -1,6 +1,7 @@
 # Handoff: wire the page layout into guild/starter
 
-**Status:** not started. Written for a fresh session to pick up.
+**Status:** done. The starter renders its example page through `rvt_page` and calls `addRivet()` with
+`config/rivet.php` (starter commits a3fa72b, fee370c).
 **Work lands in:** `~/Desktop/guild/starter` (a different repo from this one).
 **Depends on:** `guild/rivet` and `guild/framework`, both pushed to `develop`.
 

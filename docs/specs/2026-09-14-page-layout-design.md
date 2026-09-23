@@ -1,6 +1,6 @@
 # Design: page layouts
 
-**Status:** approved, not yet implemented
+**Status:** implemented
 **Date:** 2026-09-14
 
 ## Context
