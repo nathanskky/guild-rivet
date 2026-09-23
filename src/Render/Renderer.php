@@ -6,6 +6,7 @@ namespace Guild\Rivet\Render;
 
 use Guild\Rivet\Component\Component;
 use Guild\Rivet\Exception\ComponentContextException;
+use Guild\Rivet\Page\NavigationProvider;
 use Guild\Rivet\Page\PageDefaults;
 
 /**
@@ -23,8 +24,9 @@ final class Renderer
         private readonly ComponentRegistry $registry,
         private readonly ComponentFactory $factory = new ComponentFactory(),
         private readonly ?PageDefaults $pageDefaults = null,
+        private readonly ?NavigationProvider $navigation = null,
     ) {
-        $this->context = new RenderContext(pageDefaults: $this->pageDefaults);
+        $this->context = new RenderContext(pageDefaults: $this->pageDefaults, navigation: $this->navigation);
     }
 
     public function context(): RenderContext
@@ -42,7 +44,7 @@ final class Renderer
      */
     public function reset(?IdGenerator $ids = null): void
     {
-        $this->context = new RenderContext($ids, $this->pageDefaults);
+        $this->context = new RenderContext($ids, $this->pageDefaults, $this->navigation);
     }
 
     /**

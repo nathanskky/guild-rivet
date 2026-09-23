@@ -6,6 +6,7 @@ namespace Guild\Rivet\Render;
 
 use Guild\Rivet\Component\Component;
 use Guild\Rivet\Exception\ComponentContextException;
+use Guild\Rivet\Page\NavigationProvider;
 use Guild\Rivet\Page\PageDefaults;
 
 /**
@@ -21,6 +22,8 @@ use Guild\Rivet\Page\PageDefaults;
  * Instantiate one per render, never once globally. Within a single render a component
  * that throws mid-body would otherwise leave a stale frame behind and corrupt every
  * later render on the page; the engine integrations pop in a `finally` for that reason.
+ *
+ * @phpstan-import-type NavItem from PageDefaults
  */
 final class RenderContext
 {
@@ -32,6 +35,7 @@ final class RenderContext
     public function __construct(
         ?IdGenerator $ids = null,
         private readonly ?PageDefaults $pageDefaults = null,
+        private readonly ?NavigationProvider $navigation = null,
     ) {
         $this->ids = $ids ?? new SequentialIdGenerator();
     }
@@ -47,6 +51,17 @@ final class RenderContext
     public function pageDefaults(): ?PageDefaults
     {
         return $this->pageDefaults;
+    }
+
+    /**
+     * The header navigation for a page: the provider's, when one was supplied,
+     * otherwise the configured PageDefaults::$navItems.
+     *
+     * @return list<NavItem>
+     */
+    public function navItems(PageDefaults $defaults): array
+    {
+        return $this->navigation?->navItems($defaults) ?? $defaults->navItems;
     }
 
     public function open(Component $component): void

@@ -160,6 +160,30 @@ new PageDefaults(
 
 Rendering `rvt_page` without one throws `Exception\ConfigurationException`, naming the fix.
 
+### Navigation that depends on the viewer
+
+`PageDefaults::$navItems` is fixed when the application is configured. When the header should
+differ by viewer — an administration menu only administrators see — pass a
+`Guild\Rivet\Page\NavigationProvider` to the `Renderer` as well:
+
+```php
+final class AdminAwareNavigation implements NavigationProvider
+{
+    public function navItems(PageDefaults $defaults): array
+    {
+        return $this->isAdmin()
+            ? [...$defaults->navItems, ['label' => 'Settings', 'href' => '/settings']]
+            : $defaults->navItems;
+    }
+}
+
+new Renderer($registry, pageDefaults: $defaults, navigation: new AdminAwareNavigation());
+```
+
+`rvt_page` asks the provider each time it renders, and nothing else does, so the work runs only
+for whole pages — never for a component rendered on its own, a JSON response or a redirect. The
+items take the same shape `rvt_header` accepts. Rivet knows nothing about why they differ.
+
 ### Layouts
 
 `layout` takes one of three `PageLayout` values, each a structurally different document

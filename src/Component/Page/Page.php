@@ -180,7 +180,7 @@ final class Page extends Component implements StartsRender
             title: $defaults->appTitle,
             subtitle: $defaults->appSubtitle,
             href: $defaults->homeHref,
-            items: $defaults->navItems,
+            items: $context->navItems($defaults),
             containerSize: $defaults->containerSize,
             searchAction: $defaults->searchAction,
         )->render($context);
