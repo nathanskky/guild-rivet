@@ -28,15 +28,20 @@ root autoloader.
 | Package | Namespace | Role |
 |---|---|---|
 | `guild/rivet` *(this one)* | `Guild\Rivet\` | Rivet Design System components |
-| `guild/framework` | `Guild\Framework\` | Application kernel / DI container. Exposes this package via `ApplicationBuilder::addRivet()`, and **depends on it** (`dev-develop`) |
+| `guild/framework` | `Guild\Framework\` | Application kernel / DI container. Exposes this package via `ApplicationBuilder::addRivet()`, and **depends on it** (`dev-develop`). Its System settings menu, added by `addAuthorization()`, is a `NavigationProvider` |
 | `guild/access` | `Guild\Access\` | IU Login (OIDC) authentication library |
-| `guild/starter` | `Guild\Starter\` | Runnable example app |
+| `guild/grouper` | `Guild\Grouper\` | IU Grouper group-membership lookup. Independent of this package |
+| `guild/starter` | `Guild\Starter\` | Runnable example app. Requires this package **directly** (`dev-develop`) as well as through the framework — Composer's minimum-stability exemption covers only a root package's own dev-branch requirements |
 | `iu/notifications` | `IU\Notifications\` | IU Notifications API client. Fully independent |
 
 This package has **no first-party dependencies**, and `twig/twig` and `latte/latte` are
 deliberately *not* required — only suggested, and installed as dev dependencies. The
 engine extension classes ship here but are instantiated only by an application that has
 that engine. **Never move either into `require`.**
+
+`Page\NavigationProvider`, `Page\PageDefaults` and the `Renderer` constructor are used
+directly by `guild/framework`, which is the only consumer with code against this package
+rather than templates. A signature change there breaks it; change both together.
 
 ## Verify your change
 
@@ -49,9 +54,10 @@ composer check         # all three; stops at the first failure
 composer components    # list every registered component and its parameters
 ```
 
-**This package is green and must stay that way.** Unlike `framework`, `starter` and
-`notification`, there is no known-red baseline here — any failure is yours. PHPStan runs
-at `max`, the strictest setting in the workspace.
+**This package is green and must stay that way.** Unlike `framework` and `notification`,
+whose `composer analyse` is red on a clean checkout, there is no known-red baseline here —
+any failure is yours. PHPStan runs at `max`, as `access` and `grouper` do; `framework` is
+10, `notification` is 5, and `starter` runs none.
 
 ## Architecture
 
@@ -59,9 +65,10 @@ at `max`, the strictest setting in the workspace.
 src/
   Component/      one class per component; Card/, Dialog/, Form/, Grid/, Accordion/, Tabs/, Page/
     Internal/     SvgIcon — the icons components embed in their own chrome
-  Page/           PageDefaults, RivetAssets — application-wide config the Page component reads
+  Page/           PageDefaults, RivetAssets, NavigationProvider — application-wide config the Page component reads
   Html/           Html (element builder), Attributes, Modifier
-  Render/         Renderer, RenderContext, IdGenerator, ComponentFactory, ComponentRegistry, StartsRender
+  Render/         Renderer, RenderContext, RenderFrame, IdGenerator, SequentialIdGenerator,
+                  ComponentFactory, ComponentRegistry, StartsRender
   Enum/           one enum per variant axis
   Exception/
   Twig/           RivetExtension, token parser, nodes, runtime
@@ -80,7 +87,16 @@ conditional markup to one expression.
 
 **`RenderContext` is a stack of open components plus an id generator.** It is what lets a
 child read from its parent — a dialog close button deriving the id it must reference, a
-card body confirming it is inside a card. One instance per render, never global.
+card body confirming it is inside a card. One instance per render, never global. It also
+carries the `PageDefaults` and `NavigationProvider` the `Renderer` was built with; the
+`Renderer` holds both and hands them to every context it creates, so they survive the reset
+`rvt_page` performs.
+
+**`rvt_page` is the only caller of a `NavigationProvider`**, through
+`RenderContext::navItems()`, once per page render; without a provider the configured
+`PageDefaults::$navItems` are used unchanged. Keep it that way. A provider exists to do
+per-viewer work — the framework's runs a group-membership check — and asking it from
+anywhere else puts that work on renders that produce no page.
 
 **Both engines compile to the same `Renderer`.** Leaf components become functions and
 single tags; block components become paired tags whose body is captured as a string.
@@ -150,6 +166,10 @@ mocks. On top of that:
   directly, outside that layout. Neither engine exposes a reliable "top-level render
   started" hook, which is why a component has to say so instead. Identifiers stay unique
   without a reset but climb for the life of the process.
+- **`rvt_page` emits an inline `<script>Rivet.init()</script>`.** A Content-Security-Policy
+  with a strict `script-src` blocks it, and every interactive component arrives inert with
+  no server-side error. The only workaround is `RivetAssets(enabled: false)` plus a
+  hand-written asset block. Unresolved; see `docs/open-questions/2026-09-15-csp-nonce.md`.
 - **`SvgIcon` is `@internal` and holds real path data copied from Rivet.** Do not edit a
   path by hand; re-fetch it.
 
@@ -173,7 +193,11 @@ via its own pull request. **Tags live on `main`, never on `develop`.**
 Consumers pull this package as a downloaded zipball, so editing `src/` here changes
 nothing in a consuming application until the change is published.
 
-If a consumer requires a tag constraint such as `^1.0`, **merging to `develop` is not
+No release is tagged yet. `guild/framework` and `guild/starter` both require
+`dev-develop`, so a change reaches them once it is pushed to `develop` and the consumer
+runs `composer update guild/rivet`.
+
+Once a consumer requires a tag constraint such as `^1.0`, **merging to `develop` is not
 enough** — a change becomes visible only once tagged, and tags are cut from `main`:
 
 ```bash

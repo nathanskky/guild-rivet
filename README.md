@@ -184,6 +184,11 @@ new Renderer($registry, pageDefaults: $defaults, navigation: new AdminAwareNavig
 for whole pages — never for a component rendered on its own, a JSON response or a redirect. The
 items take the same shape `rvt_header` accepts. Rivet knows nothing about why they differ.
 
+In a Guild application the framework builds the `Renderer`, so there is no constructor to
+pass a provider to: it asks whichever `NavigationProvider` the container holds, and
+`addAuthorization()` registers one for its System settings menu unless given
+`adminMenu: null`.
+
 ### Layouts
 
 `layout` takes one of three `PageLayout` values, each a structurally different document
