@@ -169,7 +169,7 @@ mocks. On top of that:
 - **`rvt_page` emits an inline `<script>Rivet.init()</script>`.** A Content-Security-Policy
   with a strict `script-src` blocks it, and every interactive component arrives inert with
   no server-side error. The only workaround is `RivetAssets(enabled: false)` plus a
-  hand-written asset block. Unresolved; see `docs/open-questions/2026-09-15-csp-nonce.md`.
+  hand-written asset block. Unresolved; see `../docs/archive/rivet/open-questions/2026-09-15-csp-nonce.md`.
 - **`SvgIcon` is `@internal` and holds real path data copied from Rivet.** Do not edit a
   path by hand; re-fetch it.
 
