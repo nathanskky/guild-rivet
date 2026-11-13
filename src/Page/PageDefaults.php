@@ -19,8 +19,20 @@ use Guild\Rivet\Enum\ContainerSize;
 final readonly class PageDefaults
 {
     /**
-     * @param  list<NavItem>  $navItems  header navigation tree, as Header accepts
-     * @param  list<array{label?: string, href?: string}>  $footerLinks  extra footer links
+     * @param  string  $appTitle  The app's name, shown in the header and after each page's `<title>`.
+     * @param  string|null  $appSubtitle  A line under the app's name in the header.
+     * @param  string  $homeHref  Where the header's app name links.
+     * @param  list<NavItem>  $navItems  Header navigation tree, as Header accepts. A NavigationProvider
+     *     passed to the Renderer can change it per page.
+     * @param  string|null  $searchAction  The URL the header's search form submits to; null for no search form.
+     * @param  list<array{label?: string, href?: string}>  $footerLinks  Links added to the footer. IU's
+     *     required links are always present.
+     * @param  bool  $footerLight  Whether the footer uses Rivet's light style.
+     * @param  ContainerSize  $containerSize  Width of the page's content container.
+     * @param  string  $lang  The document's `lang` attribute.
+     * @param  string  $titleSeparator  Placed between the page's title and the app's in `<title>`.
+     * @param  string|null  $description  The default meta description.
+     * @param  RivetAssets  $assets  Where the page loads Rivet's CSS, JavaScript and icons from.
      */
     public function __construct(
         public string $appTitle,

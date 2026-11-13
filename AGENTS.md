@@ -1,216 +1,74 @@
-# AGENTS.md
+# AGENTS.md: guild/rivet
 
-Guidance for AI coding agents (and new humans) working in this repository.
+> For maintainers of guild/rivet and their agents. App developers start at [docs/index.md](docs/index.md).
 
-## What this is
+The [workspace handbook](../AGENTS.md) covers cross-repo workflow and conventions.
 
-`guild/rivet` — IU [Rivet Design System](https://rivet.iu.edu) components for PHP.
-Components are plain PHP objects that render Rivet markup; thin Twig and Latte extensions
-expose them as native tags. Namespace `Guild\Rivet\`, autoloaded from `src/`. Consumed as
-a Composer dependency; not runnable on its own.
+guild/rivet renders IU Rivet Design System markup from plain PHP component objects, with thin Twig and
+Latte extensions that expose them as tags. It targets the Rivet release in `Rivet::VERSION`.
 
-- **PHP:** `~8.5.0`
-- **Targets Rivet 2.9.1.** `Rivet::VERSION` records it.
-- **`composer.lock` is gitignored** here, so there is no lock to keep in sync.
-- **Ships no JavaScript.** Rivet's own script drives every interactive component.
+## Verify
 
-> **`README.md` is the authoritative reference for this library's public API** — setup,
-> argument conventions, the component table, and the error types. Read it before changing
-> anything under `src/Component/`. This file covers *developing* the package; the README
-> covers *using* it.
+`composer check` must pass. It passes on a clean checkout, so any failure is yours. `composer components`
+lists every registered component and its parameters.
 
-## Sibling packages
+## Keeping docs current
 
-These repos are developed side by side but are **independent git repos**. There is no root
-`composer.json` and no root git repository. Do not invent root-level tooling or a shared
-root autoloader.
+Every code change gets a docs check in the same commit. Check README, `docs/`, AGENTS.md, the docblocks
+of public classes and the comments at the changed code for anything the change makes wrong or incomplete:
 
-| Package | Namespace | Role |
-|---|---|---|
-| `guild/rivet` *(this one)* | `Guild\Rivet\` | Rivet Design System components |
-| `guild/framework` | `Guild\Framework\` | Application kernel / DI container. Exposes this package via `ApplicationBuilder::addRivet()`, and **depends on it** (`dev-develop`). Its System settings menu, added by `addAuthorization()`, is a `NavigationProvider` |
-| `guild/access` | `Guild\Access\` | IU Login (OIDC) authentication library |
-| `guild/grouper` | `Guild\Grouper\` | IU Grouper group-membership lookup. Independent of this package |
-| `guild/starter` | `Guild\Starter\` | Runnable example app. Requires this package **directly** (`dev-develop`) as well as through the framework — Composer's minimum-stability exemption covers only a root package's own dev-branch requirements |
-| `iu/notifications` | `IU\Notifications\` | IU Notifications API client. Fully independent |
+- Update a page that describes the changed behavior.
+- If no page covers new public behavior, add one to `docs/` and list it in `docs/index.md`.
+- If a maintainer needs a fact the code doesn't show, add a comment where the code is.
+- If the behavior is gone, remove its page and its index entry.
 
-This package has **no first-party dependencies**, and `twig/twig` and `latte/latte` are
-deliberately *not* required — only suggested, and installed as dev dependencies. The
-engine extension classes ship here but are instantiated only by an application that has
-that engine. **Never move either into `require`.**
+Then check the pages that link to a changed page for text that's now wrong, and link a new page from
+related pages. A non-obvious choice gets a decision record in `docs/decisions/`.
 
-`Page\NavigationProvider`, `Page\PageDefaults` and the `Renderer` constructor are used
-directly by `guild/framework`, which is the only consumer with code against this package
-rather than templates. A signature change there breaks it; change both together.
-
-## Verify your change
-
-```bash
-composer install
-composer test          # phpunit, suite "guild-rivet"
-composer analyse       # phpstan, level max, scoped to src/
-composer format:check  # pint, PSR-12 style check (writes nothing)
-composer check         # all three; stops at the first failure
-composer components    # list every registered component and its parameters
-```
-
-**This package is green and must stay that way.** Unlike `framework` and `notification`,
-whose `composer analyse` is red on a clean checkout, there is no known-red baseline here —
-any failure is yours. PHPStan runs at `max`, as `access` and `grouper` do; `framework` is
-10, `notification` is 5, and `starter` runs none.
-
-## Architecture
-
-```
-src/
-  Component/      one class per component; Card/, Dialog/, Form/, Grid/, Accordion/, Tabs/, Page/
-    Internal/     SvgIcon — the icons components embed in their own chrome
-  Page/           PageDefaults, RivetAssets, NavigationProvider — application-wide config the Page component reads
-  Html/           Html (element builder), Attributes, Modifier
-  Render/         Renderer, RenderContext, RenderFrame, IdGenerator, SequentialIdGenerator,
-                  ComponentFactory, ComponentRegistry, StartsRender
-  Enum/           one enum per variant axis
-  Exception/
-  Twig/           RivetExtension, token parser, nodes, runtime
-  Latte/          RivetExtension, nodes
-```
-
-**Markup is generated in PHP, never from template files.** Latte's `FileLoader` throws for
-any template outside the application's own `templates/` directory, so a vendor package
-cannot ship `.latte` files an app can load. Generating in PHP also gives one source of
-truth instead of two that drift.
-
-**`Html` is the element builder every component renders through.** `text()` escapes,
-`html()` does not — the distinction is in the method name so an unescaped value is always
-a deliberate choice. Null and false attributes and null children drop out, which keeps
-conditional markup to one expression.
-
-**`RenderContext` is a stack of open components plus an id generator.** It is what lets a
-child read from its parent — a dialog close button deriving the id it must reference, a
-card body confirming it is inside a card. One instance per render, never global. It also
-carries the `PageDefaults` and `NavigationProvider` the `Renderer` was built with; the
-`Renderer` holds both and hands them to every context it creates, so they survive the reset
-`rvt_page` performs.
-
-**`rvt_page` is the only caller of a `NavigationProvider`**, through
-`RenderContext::navItems()`, once per page render; without a provider the configured
-`PageDefaults::$navItems` are used unchanged. Keep it that way. A provider exists to do
-per-viewer work — the framework's runs a group-membership check — and asking it from
-anywhere else puts that work on renders that produce no page.
-
-**Both engines compile to the same `Renderer`.** Leaf components become functions and
-single tags; block components become paired tags whose body is captured as a string.
-Neither engine ever sees a template file.
-
-**A component registered in `Rivet::registry()` is automatically available in both
-engines.** A test asserts that, so a component cannot be wired into only one.
+Public behavior here includes every component's tag name, body and required parent
+([Components](docs/reference/components.md)), the argument rules, `rvt_page`'s layouts and slots, and the
+exceptions. Component classes, `PageDefaults` and `RivetAssets` keep their API reference in docblocks, so
+a change to them updates the docblock. A new component goes in `Rivet::registry()` and the components
+page.
 
 ## Conventions
 
-**This repo is formatted with Laravel Pint (PSR-12 preset), configured in `pint.json`.**
-Run `composer format` to apply it. Its rules are authoritative for anything it enforces —
-don't hand-fix a style issue Pint would catch.
+- Generate markup in PHP through `Html`, never from template files.
+- Keep each component's `rvt-*` class literals in one place, normally a `BLOCK` constant.
+- Model each Rivet modifier axis as its own enum, composed with `Html\Modifier`, never one enum per compound class.
+- Template argument names are `snake_case`; `ComponentFactory` maps them to `camelCase` parameters.
+- A component that can't render correct markup throws instead of emitting something subtly wrong.
+- Take every class name, attribute and SVG path from Rivet's published docs, never from memory.
+- `twig/twig` and `latte/latte` stay in `suggest` and `require-dev`, never `require`.
 
-- **Every `rvt-*` class literal lives in one place per component**, normally a `BLOCK`
-  constant. Rivet 3 renames several blocks, and this keeps that a single-file change.
-- **Never let one enum member encode a compound class name.** Rivet composes
-  `rvt-button--danger-secondary` from two independent axes; model them as two enums and
-  compose with `Html\Modifier`. A flat enum mirroring class names invalidates every call
-  site when Rivet renames one.
-- **Argument names reaching templates are snake_case**, mapped to camelCase parameters by
-  `ComponentFactory`. Twig cannot lex a hyphen in tag syntax at all.
-- **Fail loudly.** A component that cannot render correct markup throws rather than
-  emitting something subtly wrong: no accessible name, an out-of-range value, a
-  combination Rivet has no class for.
-- **Do not invent markup.** Every class name, attribute and SVG path here was read from
-  Rivet's published documentation. If you need markup you do not have, fetch it from
-  rivet.iu.edu rather than reconstructing it from memory.
+Latte's `FileLoader` refuses templates outside the app's own `templates/` directory, so a vendor package
+can't ship template files; generating markup in PHP also keeps one source of truth for both engines.
+Keeping class literals in one place per component makes a Rivet 3 block rename a one-file change.
 
-**Test conventions** follow `access/tests/`, the workspace reference suite: `final class
-XxxTest extends TestCase`, attributes not annotations, `self::assert*` with an intent
-message, `public static` data providers returning `iterable`, private fixture helpers, no
-mocks. On top of that:
+guild/framework constructs `Renderer` and uses `PageDefaults` and `NavigationProvider` directly, so a
+signature change there needs a matching framework change.
 
-- **`symfony/dom-crawler`** for semantic assertions where exact markup is not the point.
-- **`spatie/phpunit-snapshot-assertions`** is available for golden files.
-- **`tests/CrossEngineParityTest.php` is the guard that keeps the two engines honest.**
-  Add a case there for any component whose tag syntax is unusual. It compares *component*
-  markup only — template interpolation is excluded on purpose, because Twig escapes with
-  `ENT_QUOTES` while Latte uses `ENT_NOQUOTES` and rewrites braces, which is engine
-  behaviour neither should override.
+## Tests
 
-## Landmines
+- Use `symfony/dom-crawler` for semantic assertions where exact markup isn't the point.
+- Add a case to `tests/CrossEngineParityTest.php` for any component with unusual tag syntax.
+- Don't use PHPUnit mocks.
 
-- **Which ARIA we author differs per component, and getting it wrong is silent.** A
-  disclosure takes `aria-expanded` because Rivet documents it as an initial state. An
-  accordion, dropdown and tab set must be given **none** — Rivet's JavaScript generates
-  roles, `aria-expanded`, trigger ids and `aria-controls` at init, and anything authored
-  here is overwritten or conflicts. Check the component's docblock before adding an
-  attribute.
-- **`Renderer::render()` trims the captured body, and must keep doing so.** Twig swallows
-  one newline after `%}`; Latte relocates leading indentation into the following element,
-  across the capture boundary. Without the trim the two engines cannot produce identical
-  bytes for any indented template, and the parity test becomes impossible.
-- **Engine nodes pop the context stack in a `finally`.** Twig memoises its runtime for the
-  life of the Environment and Latte holds the provider for the life of the Engine, so one
-  leaked frame corrupts every later render in the process.
-- **Custom Twig nodes must carry `#[\Twig\Attribute\YieldReady]` and emit `yield`, never
-  `echo`.** Twig 3.28 deprecates both omissions, and `Compiler::checkForEcho()` scans the
-  emitted code.
-- **A Latte node's `getIterator()` is a by-reference generator**, where `yield from []` is
-  a fatal error. Use Latte's `false && yield;` idiom only when there is nothing else to
-  yield.
-- **`Renderer::reset()` has to be called by the integration, once per page — unless the
-  page is rendered through `rvt_page`.** `Page` implements `StartsRender`, so opening one
-  resets the context itself; the manual call is only needed when rendering components
-  directly, outside that layout. Neither engine exposes a reliable "top-level render
-  started" hook, which is why a component has to say so instead. Identifiers stay unique
-  without a reset but climb for the life of the process.
-- **`rvt_page` emits an inline `<script>Rivet.init()</script>`.** A Content-Security-Policy
-  with a strict `script-src` blocks it, and every interactive component arrives inert with
-  no server-side error. The only workaround is `RivetAssets(enabled: false)` plus a
-  hand-written asset block. Unresolved; see `../docs/archive/rivet/open-questions/2026-09-15-csp-nonce.md`.
-- **`SvgIcon` is `@internal` and holds real path data copied from Rivet.** Do not edit a
-  path by hand; re-fetch it.
+The parity test compares component markup only. Template interpolation differs on purpose: Twig escapes
+with `ENT_QUOTES` and Latte with `ENT_NOQUOTES`, and neither engine's behavior should be overridden.
 
-## Branching and pull requests
+## Gotchas
 
-The workspace `CLAUDE.md` currently permits committing directly to `develop` in these
-repos, for the sole developer. Absent that override the normal flow applies: work on a
-feature branch and open a pull request against `develop`.
+- Which ARIA attributes a component writes differs per component; read its docblock before adding one.
+- `Renderer::render()` must keep trimming the captured body, or the engines can't match byte for byte.
+- Engine nodes pop the context stack in a `finally`; a leaked frame corrupts every later render.
+- Twig nodes need `#[\Twig\Attribute\YieldReady]` and must `yield`, never `echo`.
+- A Latte node's `getIterator()` is a by-reference generator, where `yield from []` is fatal.
+- Only `rvt_page` asks the `NavigationProvider`, once per page render; keep it that way.
+- `SvgIcon` holds path data copied from Rivet; re-fetch a path instead of editing it.
 
-### Branch and release model
+The comment at each gotcha's code explains the reason.
 
-```
-feature branch  --PR-->  develop  --PR-->  main  --> tag (release)
-```
-
-`develop` accumulates day-to-day work. `main` is the released state, merged from `develop`
-via its own pull request. **Tags live on `main`, never on `develop`.**
-
-## Getting a change to consumers
-
-Consumers pull this package as a downloaded zipball, so editing `src/` here changes
-nothing in a consuming application until the change is published.
-
-No release is tagged yet. `guild/framework` and `guild/starter` both require
-`dev-develop`, so a change reaches them once it is pushed to `develop` and the consumer
-runs `composer update guild/rivet`.
-
-Once a consumer requires a tag constraint such as `^1.0`, **merging to `develop` is not
-enough** — a change becomes visible only once tagged, and tags are cut from `main`:
-
-```bash
-git checkout main && git pull
-git tag <next-version> && git push --tags
-```
-
-For a local iteration loop, temporarily add a path repository to the consumer's
-`composer.json` above its VCS entries, then `composer update guild/rivet`:
-
-```json
-{ "type": "path", "url": "../rivet", "options": { "symlink": true } }
-```
-
-**Revert that before committing.** It is a local-only convenience and will break the build
-for anyone whose checkout has no sibling `../rivet`.
+`rvt_page`'s inline `Rivet.init()` script is blocked by a strict Content-Security-Policy, and no nonce
+support exists yet. The open question and the options considered are in the workspace repo's
+`docs/archive/rivet/open-questions/2026-09-15-csp-nonce.md`.
